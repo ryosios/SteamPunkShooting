@@ -14,11 +14,11 @@ public class UICharacterGauge : MonoBehaviour
     {
         GaugeImage.fillAmount = 0;
     }
-    public void GaugeValueSet()
+    public void GaugeValueSet(float characterPower)
     {
         if(GaugeImage.fillAmount < 1)
         {
-            GaugeImage.fillAmount += 0.2f;
+            GaugeImage.fillAmount = characterPower;
         }
         
     }

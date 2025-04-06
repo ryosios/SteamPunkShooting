@@ -23,7 +23,16 @@ public class ParticleController : MonoBehaviour
     }
     private async void CharacterHpSet()
     {
-        _characterLocator._characterHP -= 1; //HP1減らす
+        if (_characterLocator._characterHP > 0 && _characterLocator._characterHP <= 10)
+        {
+            _characterLocator._characterHP -= 1; //HP1減らす
+        }
+           
+        if(_characterLocator._characterSpecialLevel >= 0 && _characterLocator._characterSpecialLevel < 1)
+        {
+            _characterLocator._characterSpecialLevel += 0.1f;//スキルゲージを+0.1
+        }
+        
         _characterLocator.gameObject.layer = 6;
 
         await UniTask.Delay(TimeSpan.FromSeconds(_mutekiTime));
@@ -32,7 +41,16 @@ public class ParticleController : MonoBehaviour
 
     void OnParticleCollision(GameObject obj)
     {
-        Debug.Log("Hit");
-        _particleHit.Invoke();
+        if(obj.tag == "Player")
+        {
+            Debug.Log("Hit");
+            _particleHit.Invoke();
+        }
+        if (obj.tag == "CharacterSpecial")
+        {
+            Debug.Log("CharacterSpecial");
+           
+        }
+
     }
 }

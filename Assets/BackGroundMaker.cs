@@ -37,6 +37,7 @@ public class BackGroundMaker : MonoBehaviour
         }   
     }
 
+    /*
     public async void CreateBgObjectSet()
     {
        if(_isBgCreate)
@@ -48,7 +49,7 @@ public class BackGroundMaker : MonoBehaviour
         }
         
     }
-    
+    */
 
     // Start is called before the first frame update
     void Start()
