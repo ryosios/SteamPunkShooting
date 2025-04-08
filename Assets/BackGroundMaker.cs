@@ -16,6 +16,8 @@ public class BackGroundMaker : MonoBehaviour
     [SerializeField] private float _bgRangeTime;
     private bool _isBgCreate = false;
 
+    private const float _bgDepth = 17.0f;
+    private const float _bgOverlap = 0.01f;
 
     private void Awake()
     {
@@ -28,9 +30,10 @@ public class BackGroundMaker : MonoBehaviour
 
         for(int i = 0; i < _bgObjectsTra.Length; i++)
         {
-            if (_bgObjectsTra[i].transform.localPosition.z >= 63)
+            if (_bgObjectsTra[i].transform.localPosition.z >= (_bgDepth - _bgOverlap) * _bgObjectsTra.Length)
             {
-                _bgObjectsTra[i].transform.localPosition = new Vector3(0f, 0f, -4f);
+                var z = _bgObjectsTra[i].transform.localPosition.z - (_bgDepth - _bgOverlap) * _bgObjectsTra.Length;
+                _bgObjectsTra[i].transform.localPosition = new Vector3(0f, 0f, z);
             }
             _bgObjectsTra[i].transform.localPosition += new Vector3(0f, 0f, _bgSpeed * Time.deltaTime);
            
@@ -54,7 +57,11 @@ public class BackGroundMaker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        for (int i = 0; i < _bgObjectsTra.Length; i++)
+        {
+            var z = (_bgDepth - _bgOverlap) * i;
+            _bgObjectsTra[i].transform.localPosition = new Vector3(0f, 0f, z);
+        }
     }
 
     // Update is called once per frame
