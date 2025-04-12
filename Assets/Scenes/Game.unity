@@ -353,11 +353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0973c6267af338744b4bc0a9bf93d5e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterLocator: {fileID: 710688337}
   _backGroundMaker: {fileID: 1940963462}
-  _uICharacterHp: {fileID: 1909081862}
-  _uICharacterGauge: {fileID: 852469034}
-  _uICharacterAttackLevel: {fileID: 1210067809}
 --- !u!4 &131508368
 Transform:
   m_ObjectHideFlags: 0
@@ -1550,6 +1546,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GaugeImage: {fileID: 1268188336}
+  _characterLocator: {fileID: 710688337}
 --- !u!1001 &866675059
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2811,7 +2808,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68d2d959e923c724fb33e4b84de13254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uICharacterAttackLevelSlider: {fileID: 0}
+  _uICharacterAttackLevelSlider: {fileID: 1210067808}
 --- !u!1001 &1210472676
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10103,6 +10100,7 @@ MonoBehaviour:
   - {fileID: 1164443915}
   - {fileID: 905643320}
   - {fileID: 1861033244}
+  _characterLocator: {fileID: 710688337}
 --- !u!1 &1940963460
 GameObject:
   m_ObjectHideFlags: 0

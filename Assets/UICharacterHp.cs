@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
 
 
 public class UICharacterHp : MonoBehaviour
@@ -9,14 +10,19 @@ public class UICharacterHp : MonoBehaviour
    
     [SerializeField] private RectTransform[] _hPStarsUpperRect;
     [SerializeField] private RectTransform[] _hPStarsUnderRect;
-
-
-    private int _initHpStarInt = 5;
+    [SerializeField] private CharacterLocator _characterLocator;
 
 
     private void Awake()
     {
-        SetHpValue(_initHpStarInt);
+        SetHpValue(_characterLocator._characterHP.Value);
+
+        _characterLocator._characterHP
+            .DistinctUntilChanged()//“¯‚¶’l‚È‚ç–³‹
+            .Subscribe(hp => //’l‚ªˆø”‚Å©“®‚Å“ü‚é
+            { 
+                SetHpValue(hp);
+            });
     }
 
     public void SetHpValue(int nowHp)
