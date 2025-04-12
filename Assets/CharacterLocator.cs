@@ -30,13 +30,14 @@ public class CharacterLocator : MonoBehaviour
     public Subject<Unit> _playSpecialSubject = new Subject<Unit>();
     private float _specialTime = 2f; //2秒間スペシャルで弾を消す
     private bool _isSpecialActive = false;
+ 
     //スキル関連
     public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//弾のレベル
+    private float _attackLevelTime = 7f; //7秒間たったらアタックレベルをさげる
 
-   
-   
 
-    private float _skillTime = 7f; //7秒間スキルで弾を消す
+
+
 
     private float _mutekiTime = 1f;
 
@@ -110,7 +111,7 @@ public class CharacterLocator : MonoBehaviour
             .DistinctUntilChanged()//同じ値なら無視
             .Subscribe(attackLevel => //値が引数で自動で入る
             {
-                CharacterAttackSet(_characterAttackLevel.Value);
+                CharacterAttackSet(attackLevel);
             });
 
     }
@@ -195,14 +196,14 @@ public class CharacterLocator : MonoBehaviour
     {
         //HPを1減らす
         _characterHP.Value -= 1;
-        //Attackレベルをあげる。0～4
-        if(_characterAttackLevel.Value < 4)
+        //Attackレベルをあげる。0～5
+        if(_characterAttackLevel.Value < 5)
         {
             _characterAttackLevel.Value += 1;
         }
         //弾を増やすのはCharacterAttackで
         //一定時間後にAttackレベルを下げる
-        await UniTask.Delay(TimeSpan.FromSeconds(_skillTime));
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackLevelTime));
         if (_characterAttackLevel.Value > 0)
         {
             _characterAttackLevel.Value -= 1;
