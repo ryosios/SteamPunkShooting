@@ -12,7 +12,7 @@ public class ParticleController : MonoBehaviour
     [SerializeField] EnemyLocator _enemyLocator;
     
     private int _getDamagePointValue = 1;
-    private float _getSpecialPointValue = 0.1f;
+    
 
     void Awake()
     {
@@ -25,7 +25,7 @@ public class ParticleController : MonoBehaviour
         {
             Debug.Log("Hit");
             _enemyLocator._characterLocator._getDamageSubject.OnNext(_getDamagePointValue);
-            _enemyLocator._characterLocator._getSpecialLevelSubject.OnNext(_getSpecialPointValue);
+           // _enemyLocator._characterLocator._getSpecialLevelSubject.OnNext(_getSpecialPointValue);
 
         }
         if (obj.tag == "CharacterSpecial")
