@@ -26,7 +26,7 @@ public class UICharacterGauge : MonoBehaviour
     }
  
 
-    public void SpecialGaugeValueSet(int specialLevel)
+    public void SpecialGaugeValueSet(int specialLevel)//UIスペシャルゲージにスペシャルレベルに応じたアニメーションをセット
     {
         if (specialLevel <= 6 && specialLevel >= 1)
         {

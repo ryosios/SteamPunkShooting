@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using UniRx;
 using Spine.Unity;
+using System.Threading;
 
 
 public class CharacterLocator : MonoBehaviour
@@ -25,17 +26,18 @@ public class CharacterLocator : MonoBehaviour
 
     //Hp関連
     public ReactiveProperty<int> _characterHP { get; set; } = new ReactiveProperty<int>(5);
-    public Subject<int> _getDamageSubject = new Subject<int>();
+    public Subject<int> _getDamageSubject = new Subject<int>();//被弾イベント
 
     //スペシャル関連
     public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //スペシャルゲージ。レベル0～6。40度きざみ。
-    public Subject<Unit> _playSpecialSubject = new Subject<Unit>();
+    public Subject<Unit> _playSpecialSubject = new Subject<Unit>();//スペシャル撃ったときのイベント
     private float _specialTime = 2f; //2秒間スペシャルで弾を消す
     private bool _isSpecialActive = false;
  
     //スキル関連
-    public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//弾のレベル
+    public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//キャラクターの弾のレベル
     private float _attackLevelTime = 7f; //7秒間たったらアタックレベルをさげる
+    private CancellationTokenSource _attackLevelCts;
 
 
 
@@ -62,8 +64,8 @@ public class CharacterLocator : MonoBehaviour
         
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
-        CharacterAttackSet(_characterAttackLevel.Value);
-        _characterSpineSA.state.SetAnimation(1, "blink", true);
+        CharacterAttackSet(_characterAttackLevel.Value);//アタックレベルによって弾を変える。初期設定。
+        _characterSpineSA.state.SetAnimation(1, "blink", true);//まばたきアニメーションをトラック1に合成
 
         //移動
         Observable.EveryUpdate()
@@ -75,7 +77,7 @@ public class CharacterLocator : MonoBehaviour
         //HP監視
         _characterHP
             .DistinctUntilChanged()
-            .Skip(1)
+            .Skip(1)//初回絶対一回呼ばれる対策
             .Subscribe(hp =>
             {
                 Debug.Log($"キャラのHPが変わったよ！現在HP: {hp}");
@@ -96,7 +98,7 @@ public class CharacterLocator : MonoBehaviour
         //スペシャルレベル監視（0～6）
         _characterSpecialLevel
             .DistinctUntilChanged()
-            .Skip(1)    
+            .Skip(1)//初回絶対一回呼ばれる対策
             .Subscribe(specialLevel =>
             {
                 Debug.Log($"必殺技のレベルが変わったよ！現在SpecialLevel: {specialLevel}");
@@ -247,7 +249,7 @@ public class CharacterLocator : MonoBehaviour
     }
   
 
-    public async UniTaskVoid CharacterSpecialSet()
+    public async UniTaskVoid CharacterSpecialSet()//スペシャルの処理
     {
 
         if(_characterSpecialLevel.Value >= 6 && _isSpecialActive == false)
@@ -255,7 +257,7 @@ public class CharacterLocator : MonoBehaviour
             _isSpecialActive = true;
 
             _characterSpecialLevel.Value = 0;
-            //スキル処理
+            //スペシャル処理
             _characterSpecial.SetActive(true);
             await UniTask.Delay(TimeSpan.FromSeconds(_specialTime));
             _characterSpecial.SetActive(false);
@@ -265,7 +267,7 @@ public class CharacterLocator : MonoBehaviour
            
     }
 
-    public async UniTaskVoid CharacterSkillSet()
+    public async UniTaskVoid CharacterSkillSet()//スキル処理。スキルを使ったらＨＰ消費してアタックレベルをあげる。
     {
         //HPを1減らす
         _characterHP.Value -= 1;
@@ -277,12 +279,34 @@ public class CharacterLocator : MonoBehaviour
         }
         //弾を増やすのはCharacterAttackで
         //一定時間後にAttackレベルを下げる
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackLevelTime));
-        if (_characterAttackLevel.Value > 0)
-        {
-            _characterAttackLevel.Value -= 1;
-        }
 
+        // 前回のキャンセル処理（ある場合）
+        _attackLevelCts?.Cancel();
+        _attackLevelCts = new CancellationTokenSource();
+        var token = _attackLevelCts.Token;
+
+        // 新しい下げ処理をスタート（繰り返し）
+        DecreaseAttackLevelOverTime(token).Forget();
+
+    }
+    private async UniTaskVoid DecreaseAttackLevelOverTime(CancellationToken token)
+    {
+        try
+        {
+            while (_characterAttackLevel.Value > 0)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(_attackLevelTime), cancellationToken: token);
+
+                if (_characterAttackLevel.Value > 0)
+                {
+                    _characterAttackLevel.Value -= 1;
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // キャンセルされたときは何もしない
+        }
     }
 
     public void CharacterAttackSet(int characterAttackLevel)

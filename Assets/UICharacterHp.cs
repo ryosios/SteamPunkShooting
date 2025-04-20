@@ -15,19 +15,11 @@ public class UICharacterHp : MonoBehaviour
 
     private void Awake()
     {
+        //初期HP設定
         SetHpValue(_characterLocator._characterHP.Value);
-
-        /*
-        _characterLocator._characterHP
-            .DistinctUntilChanged()//同じ値なら無視
-            .Subscribe(hp => //値が引数で自動で入る
-            { 
-                SetHpValue(hp);
-            });
-        */
     }
 
-    public void SetHpValue(int nowHp)
+    public void SetHpValue(int nowHp)//UIにHPをセット
     {
         for (int i = 0; i < 10; i++)
         {
