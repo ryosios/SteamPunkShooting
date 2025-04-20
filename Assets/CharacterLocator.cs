@@ -12,6 +12,7 @@ public class CharacterLocator : MonoBehaviour
    
     [SerializeField] private Rigidbody2D _characterLocatorRigid;
     [SerializeField] private UICharacterGauge _uICharacterGauge;
+    [SerializeField] private UICharacterHp _uICharacterHp;
     [SerializeField] private GameObject _characterSpecial;
 
     [Header("AttackType")]
@@ -25,8 +26,7 @@ public class CharacterLocator : MonoBehaviour
     public Subject<int> _getDamageSubject = new Subject<int>();
 
     //スペシャル関連
-    public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //スペシャルゲージ。最大1。0.1ずつ上昇。
-    public Subject<int> _getSpecialLevelSubject = new Subject<int>();
+    public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //スペシャルゲージ。レベル0～6。40度きざみ。
     public Subject<Unit> _playSpecialSubject = new Subject<Unit>();
     private float _specialTime = 2f; //2秒間スペシャルで弾を消す
     private bool _isSpecialActive = false;
@@ -71,18 +71,36 @@ public class CharacterLocator : MonoBehaviour
 
         //HP監視
         _characterHP
+            .DistinctUntilChanged()
+            .Skip(1)
             .Subscribe(hp =>
             {
                 Debug.Log($"キャラのHPが変わったよ！現在HP: {hp}");
 
-                _getSpecialLevelSubject.OnNext(_uICharacterGauge._getSpecialPointValue);
+                _uICharacterHp.SetHpValue(hp); //UIにセット
+                if (_characterSpecialLevel.Value >= 0 && _characterSpecialLevel.Value < 6)
+                {
+                    _characterSpecialLevel.Value += 1;//スペシャルレベル+1
+                }
 
                 if (hp <= 0)
                 {
                     Debug.Log("キャラがやられた！");
                 }
             })
-            .AddTo(this); 
+            .AddTo(this);
+
+        //スペシャルレベル監視（0～6）
+        _characterSpecialLevel
+            .DistinctUntilChanged()
+            .Skip(1)    
+            .Subscribe(specialLevel =>
+            {
+                Debug.Log($"必殺技のレベルが変わったよ！現在SpecialLevel: {specialLevel}");
+                _uICharacterGauge.SpecialGaugeValueSet(specialLevel);
+
+            })
+            .AddTo(this);
 
         //ダメージ監視（キャラクターが被弾時）
         _getDamageSubject
@@ -97,16 +115,7 @@ public class CharacterLocator : MonoBehaviour
             .AddTo(this);
 
 
-        //スペシャルレベル監視
-        _getSpecialLevelSubject
-            .Subscribe(specialPoint =>
-            {
-                if (_characterSpecialLevel.Value >= 0 && _characterSpecialLevel.Value < 240)
-                {
-                    GetSpecialPoint(specialPoint);
-                }
-            })
-            .AddTo(this);
+   
 
         //スペシャル
         Observable.EveryUpdate()
@@ -224,15 +233,12 @@ public class CharacterLocator : MonoBehaviour
         await UniTask.Delay(TimeSpan.FromSeconds(_mutekiTime));
         this.gameObject.layer = 3;
     }
-    private void GetSpecialPoint(int specialPoint)
-    {
-        _characterSpecialLevel.Value += specialPoint;
-    }
+  
 
     public async UniTaskVoid CharacterSpecialSet()
     {
 
-        if(_characterSpecialLevel.Value >= 240 && _isSpecialActive == false)
+        if(_characterSpecialLevel.Value >= 6 && _isSpecialActive == false)
         {
             _isSpecialActive = true;
 
@@ -251,6 +257,7 @@ public class CharacterLocator : MonoBehaviour
     {
         //HPを1減らす
         _characterHP.Value -= 1;
+
         //Attackレベルをあげる。0～5
         if(_characterAttackLevel.Value < 5)
         {

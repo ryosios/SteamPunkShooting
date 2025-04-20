@@ -153,16 +153,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 12681082}
-  m_LocalRotation: {x: 0, y: 0, z: 0.86602545, w: 0.49999994}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 852469035}
+  m_Father: {fileID: 40270505}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 120}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.7000122, y: 0.9400177}
+  m_AnchoredPosition: {x: -0.6, y: -28}
   m_SizeDelta: {x: 20, y: 158}
   m_Pivot: {x: 0.5, y: 0.33}
 --- !u!114 &12681084
@@ -203,6 +203,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 12681082}
   m_CullTransparentMesh: 1
+--- !u!1 &40270504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 40270505}
+  m_Layer: 5
+  m_Name: SpacialGaugeArrowRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &40270505
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40270504}
+  m_LocalRotation: {x: 0, y: 0, z: 0.86602545, w: 0.49999994}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 12681083}
+  m_Father: {fileID: 852469035}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 120}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.7000122, y: 0.9400177}
+  m_SizeDelta: {x: 20, y: 158}
+  m_Pivot: {x: 0.5, y: 0.33}
 --- !u!224 &50108229 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7768181540777814771, guid: 7d1138e160a23444e831dccf744254d9,
@@ -7242,6 +7278,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 126093794427876956, guid: 7d1138e160a23444e831dccf744254d9,
+        type: 3}
+      propertyPath: m_Value
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 205906363455981956, guid: 7d1138e160a23444e831dccf744254d9,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -7991,13 +8032,25 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1686853926386569836, guid: 7d1138e160a23444e831dccf744254d9,
         type: 3}
       insertIndex: 1
-      addedObject: {fileID: 12681083}
+      addedObject: {fileID: 40270505}
     - targetCorrespondingSourceObject: {fileID: 1686853926386569836, guid: 7d1138e160a23444e831dccf744254d9,
         type: 3}
       insertIndex: 2
       addedObject: {fileID: 1940045742}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d1138e160a23444e831dccf744254d9, type: 3}
+--- !u!114 &4319259806628428477 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6535175399676577814, guid: 7d1138e160a23444e831dccf744254d9,
+    type: 3}
+  m_PrefabInstance: {fileID: 4319259806628428471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc325c4e7665edd4dae9a9157ae1f9c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6249894518207107073
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8081,6 +8134,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5412262995852525535, guid: d699dae32a7bdcd4aa9c06f10898bb95,
+        type: 3}
+      propertyPath: _uICharacterHp
+      value: 
+      objectReference: {fileID: 4319259806628428477}
     - target: {fileID: 5412262995852525535, guid: d699dae32a7bdcd4aa9c06f10898bb95,
         type: 3}
       propertyPath: _characterSpecial

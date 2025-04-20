@@ -19,31 +19,22 @@ public class UICharacterGauge : MonoBehaviour
     private void Awake()
     {
         _initSpecialGaugeArrowRotate = _specialGaugeArrow.localRotation.eulerAngles;
-
-        GaugeImage.fillAmount = _characterLocator._characterSpecialLevel.Value;
-        _characterLocator._characterSpecialLevel
-            .DistinctUntilChanged()//“¯‚¶’l‚È‚ç–³‹
-            .Subscribe(specialLevel => //’l‚ªˆø”‚Å©“®‚Å“ü‚é
-            {
-                // GaugeValueSet(specialLevel);
-                GaugeValueSet2(specialLevel);
-            });
     }
-    public void GaugeValueSet(float specialLevel)
+ 
+
+    public void SpecialGaugeValueSet(int specialLevel)
     {
-        if(GaugeImage.fillAmount <= 1)
+        if (specialLevel < 6)
         {
-            GaugeImage.fillAmount = specialLevel;
+            _specialGaugeArrow.DOLocalRotate(new Vector3(0, 0, specialLevel * 40), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutExpo);
+            Debug.Log(specialLevel);
         }
-        
-    }
-
-    public void GaugeValueSet2(int specialLevel)
-    {
-        //_specialGaugeArrow.localRotation = Quaternion.Euler(_initSpecialGaugeArrowRotate);
-
-        _specialGaugeArrow.DORotate(new Vector3(0, 0, 120 - specialLevel), 0.5f,RotateMode.FastBeyond360).SetEase(Ease.OutExpo);
-        Debug.Log(specialLevel);
+        else
+        {
+            _specialGaugeArrow.DOLocalRotate(new Vector3(0, 0, specialLevel * 40), 0.5f).SetEase(Ease.OutExpo);
+            Debug.Log(specialLevel);
+        }
+   
 
     }
 

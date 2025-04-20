@@ -17,12 +17,14 @@ public class UICharacterHp : MonoBehaviour
     {
         SetHpValue(_characterLocator._characterHP.Value);
 
+        /*
         _characterLocator._characterHP
             .DistinctUntilChanged()//“¯‚¶’l‚È‚ç–³‹
             .Subscribe(hp => //’l‚ªˆø”‚Å©“®‚Å“ü‚é
             { 
                 SetHpValue(hp);
             });
+        */
     }
 
     public void SetHpValue(int nowHp)
