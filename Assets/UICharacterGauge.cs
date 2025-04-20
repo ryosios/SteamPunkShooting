@@ -15,7 +15,8 @@ public class UICharacterGauge : MonoBehaviour
     private Vector3 _initSpecialGaugeArrowRotate;
     // Start is called before the first frame update
 
-    public int _getSpecialPointValue { get; set; } = 40; //Specialゲージが増える値
+    private const float _specialGaugeInitialAngle = 120.0f;
+    private const float _specialGaugeUnitAngle = -40.0f; //1Specialゲージあたりのメータの角度
     private void Awake()
     {
         _initSpecialGaugeArrowRotate = _specialGaugeArrow.localRotation.eulerAngles;
@@ -41,8 +42,9 @@ public class UICharacterGauge : MonoBehaviour
     public void GaugeValueSet2(int specialLevel)
     {
         //_specialGaugeArrow.localRotation = Quaternion.Euler(_initSpecialGaugeArrowRotate);
-
-        _specialGaugeArrow.DORotate(new Vector3(0, 0, 120 - specialLevel), 0.5f,RotateMode.FastBeyond360).SetEase(Ease.OutExpo);
+        var currentAngle = Mathf.DeltaAngle(0.0f, _specialGaugeArrow.rotation.eulerAngles.z);
+        var targetAngle = _specialGaugeInitialAngle + _specialGaugeUnitAngle * specialLevel;
+        _specialGaugeArrow.DOLocalRotate(new Vector3(0, 0, targetAngle - currentAngle), 0.5f, RotateMode.LocalAxisAdd);
         Debug.Log(specialLevel);
 
     }

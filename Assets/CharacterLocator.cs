@@ -30,6 +30,7 @@ public class CharacterLocator : MonoBehaviour
     public Subject<Unit> _playSpecialSubject = new Subject<Unit>();
     private float _specialTime = 2f; //2秒間スペシャルで弾を消す
     private bool _isSpecialActive = false;
+    private const int _maxSpecialLevel = 6;
  
     //スキル関連
     public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//弾のレベル
@@ -71,11 +72,12 @@ public class CharacterLocator : MonoBehaviour
 
         //HP監視
         _characterHP
+            .SkipLatestValueOnSubscribe() //サブスクライブ時の通知は無視
             .Subscribe(hp =>
             {
                 Debug.Log($"キャラのHPが変わったよ！現在HP: {hp}");
 
-                _getSpecialLevelSubject.OnNext(_uICharacterGauge._getSpecialPointValue);
+                AddSpecialPoint(1);
 
                 if (hp <= 0)
                 {
@@ -92,18 +94,6 @@ public class CharacterLocator : MonoBehaviour
                 {
                     GetDamagePoint(damage);
                    
-                }
-            })
-            .AddTo(this);
-
-
-        //スペシャルレベル監視
-        _getSpecialLevelSubject
-            .Subscribe(specialPoint =>
-            {
-                if (_characterSpecialLevel.Value >= 0 && _characterSpecialLevel.Value < 240)
-                {
-                    GetSpecialPoint(specialPoint);
                 }
             })
             .AddTo(this);
@@ -224,15 +214,15 @@ public class CharacterLocator : MonoBehaviour
         await UniTask.Delay(TimeSpan.FromSeconds(_mutekiTime));
         this.gameObject.layer = 3;
     }
-    private void GetSpecialPoint(int specialPoint)
+    private void AddSpecialPoint(int deltaSpecialPoint)
     {
-        _characterSpecialLevel.Value += specialPoint;
+        _characterSpecialLevel.Value = Mathf.Clamp(_characterSpecialLevel.Value + deltaSpecialPoint, 0, _maxSpecialLevel);
     }
 
     public async UniTaskVoid CharacterSpecialSet()
     {
 
-        if(_characterSpecialLevel.Value >= 240 && _isSpecialActive == false)
+        if(_characterSpecialLevel.Value >= _maxSpecialLevel && _isSpecialActive == false)
         {
             _isSpecialActive = true;
 
