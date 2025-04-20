@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using System.Threading.Tasks;
 using System;
 using UniRx;
+using Spine.Unity;
 
 
 public class CharacterLocator : MonoBehaviour
@@ -14,6 +15,7 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private UICharacterGauge _uICharacterGauge;
     [SerializeField] private UICharacterHp _uICharacterHp;
     [SerializeField] private GameObject _characterSpecial;
+    [SerializeField] private SkeletonAnimation _characterSpineSA;
 
     [Header("AttackType")]
     [SerializeField] private GameObject[] _characterAttackObject ;
@@ -61,6 +63,7 @@ public class CharacterLocator : MonoBehaviour
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
         CharacterAttackSet(_characterAttackLevel.Value);
+        _characterSpineSA.state.SetAnimation(1, "blink", true);
 
         //ˆÚ“®
         Observable.EveryUpdate()
@@ -198,30 +201,39 @@ public class CharacterLocator : MonoBehaviour
         {
             case MotionType.Default:
                 _characterLocatorRigid.velocity = Vector2.zero;
+                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
                 break;
             case MotionType.Left:
                 _characterLocatorRigid.velocity = new Vector2(-1 , 0) * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
                 break;
             case MotionType.Right:
                 _characterLocatorRigid.velocity = new Vector2(1, 0) * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
                 break;
             case MotionType.Up:
                 _characterLocatorRigid.velocity = new Vector2(0, 1) * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
                 break;
             case MotionType.Down:
                 _characterLocatorRigid.velocity = new Vector2(0, -1) * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
                 break;
             case MotionType.LeftUp:
                 _characterLocatorRigid.velocity = new Vector2(-1 , 1).normalized * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
                 break;
             case MotionType.RightUp:
                 _characterLocatorRigid.velocity = new Vector2(1 , 1).normalized * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
                 break;
             case MotionType.LeftDown:
                 _characterLocatorRigid.velocity = new Vector2(-1, -1).normalized * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
                 break;
             case MotionType.RightDown:
                 _characterLocatorRigid.velocity = new Vector2(1 , -1).normalized * _characterVelocity;
+                SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
                 break;
         }
     }
@@ -321,4 +333,17 @@ public class CharacterLocator : MonoBehaviour
         }
     }
 
+    private void SetSpineAnimation(SkeletonAnimation skeletonAnimation,int trackNumber , String animationName,bool loop)
+    {
+        if (!IsPlayingAnimation(skeletonAnimation, animationName, trackNumber))
+        {
+            skeletonAnimation.state.SetAnimation(trackNumber, animationName, loop);
+        }
+       
+    }
+    bool IsPlayingAnimation(SkeletonAnimation skeleton, string animationName, int trackIndex = 0)
+    {
+        var current = skeleton.AnimationState.GetCurrent(trackIndex);
+        return current != null && current.Animation != null && current.Animation.Name == animationName;
+    }
 }
