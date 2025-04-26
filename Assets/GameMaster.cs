@@ -8,10 +8,13 @@ using DG.Tweening;
 public class GameMaster : MonoBehaviour
 {
     [SerializeField] private BackGroundMaker _backGroundMaker;
+    [SerializeField] private Animator _titleImageAnimator;
+    [SerializeField] private RectTransform[] _titleTweenHaguruma;
 
     public ReactiveProperty<int> _stageNumber = new ReactiveProperty<int>(0);
     public ReactiveProperty<int> _chapterNumber = new ReactiveProperty<int>(0);
 
+    public Button _startButton;
     public Button TestButtonS;
     public Button TestButtonC;
     public Button TestButtonN;
@@ -36,7 +39,18 @@ public class GameMaster : MonoBehaviour
                
 
 #endif
-
+        _startButton.OnClickAsObservable()
+               .Subscribe(_ =>
+               {
+                   foreach(RectTransform tweenHaguruma in _titleTweenHaguruma)
+                   {
+                       tweenHaguruma.DOKill();
+                   }
+                   _titleImageAnimator.SetTrigger("TitleAnimation4");
+                   _chapterNumber.Value += 1;
+               
+               })
+               .AddTo(this); // this‚ª”jŠü‚³‚ê‚½‚Æ‚«‚ÉŽ©“®‰ðœ
 
         TestButtonS.OnClickAsObservable()
                .Subscribe(_ => { _stageNumber.Value += 1; })

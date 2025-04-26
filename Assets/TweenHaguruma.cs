@@ -8,10 +8,11 @@ public class TweenHaguruma : MonoBehaviour
     [SerializeField] private RectTransform _hagurumaRect;
     [SerializeField] private float _rotateTime;
     [SerializeField] private bool _isRotateReverse;
+    public bool _destroyMotion = true;
 
 
     // Start is called before the first frame update
-    private void Awake()
+    private void Start()
     {
         Vector3 thisRotate = this.GetComponent<RectTransform>().localRotation.eulerAngles;
         if (!_isRotateReverse)
@@ -33,4 +34,5 @@ public class TweenHaguruma : MonoBehaviour
     {
         _hagurumaRect.DOKill();
     }
+
 }
