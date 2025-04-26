@@ -24,19 +24,19 @@ public class CharacterLocator : MonoBehaviour
 
     private float _characterVelocity { get; set; } = 5f;
 
-    //HpŠÖ˜A
+    //Hpï¿½Ö˜A
     public ReactiveProperty<int> _characterHP { get; set; } = new ReactiveProperty<int>(5);
-    public Subject<int> _getDamageSubject = new Subject<int>();//”í’eƒCƒxƒ“ƒg
+    public Subject<int> _getDamageSubject = new Subject<int>();//ï¿½ï¿½eï¿½Cï¿½xï¿½ï¿½ï¿½g
 
-    //ƒXƒyƒVƒƒƒ‹ŠÖ˜A
-    public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //ƒXƒyƒVƒƒƒ‹ƒQ[ƒWBƒŒƒxƒ‹0`6B40“x‚«‚´‚İB
-    public Subject<Unit> _playSpecialSubject = new Subject<Unit>();//ƒXƒyƒVƒƒƒ‹Œ‚‚Á‚½‚Æ‚«‚ÌƒCƒxƒ“ƒg
-    private float _specialTime = 2f; //2•bŠÔƒXƒyƒVƒƒƒ‹‚Å’e‚ğÁ‚·
+    //ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ö˜A
+    public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Qï¿½[ï¿½Wï¿½Bï¿½ï¿½ï¿½xï¿½ï¿½0ï¿½`6ï¿½B40ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½İB
+    public Subject<Unit> _playSpecialSubject = new Subject<Unit>();//ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ÌƒCï¿½xï¿½ï¿½ï¿½g
+    private float _specialTime = 2f; //2ï¿½bï¿½ÔƒXï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Å’eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private bool _isSpecialActive = false;
  
-    //ƒXƒLƒ‹ŠÖ˜A
-    public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//ƒLƒƒƒ‰ƒNƒ^[‚Ì’e‚ÌƒŒƒxƒ‹
-    private float _attackLevelTime = 7f; //7•bŠÔ‚½‚Á‚½‚çƒAƒ^ƒbƒNƒŒƒxƒ‹‚ğ‚³‚°‚é
+    //ï¿½Xï¿½Lï¿½ï¿½ï¿½Ö˜A
+    public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½Ì’eï¿½Ìƒï¿½ï¿½xï¿½ï¿½
+    private float _attackLevelTime = 7f; //7ï¿½bï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½^ï¿½bï¿½Nï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private CancellationTokenSource _attackLevelCts;
 
 
@@ -64,50 +64,50 @@ public class CharacterLocator : MonoBehaviour
         
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
-        CharacterAttackSet(_characterAttackLevel.Value);//ƒAƒ^ƒbƒNƒŒƒxƒ‹‚É‚æ‚Á‚Ä’e‚ğ•Ï‚¦‚éB‰Šúİ’èB
-        _characterSpineSA.state.SetAnimation(1, "blink", true);//‚Ü‚Î‚½‚«ƒAƒjƒ[ƒVƒ‡ƒ“‚ğƒgƒ‰ƒbƒN1‚É‡¬
+        CharacterAttackSet(_characterAttackLevel.Value);//ï¿½Aï¿½^ï¿½bï¿½Nï¿½ï¿½ï¿½xï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½Ä’eï¿½ï¿½Ï‚ï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½B
+        _characterSpineSA.state.SetAnimation(1, "blink", true);//ï¿½Ü‚Î‚ï¿½ï¿½ï¿½ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½bï¿½N1ï¿½Éï¿½ï¿½ï¿½
 
-        //ˆÚ“®
+        //ï¿½Ú“ï¿½
         Observable.EveryUpdate()
             .Subscribe(_ => {
                 CharacterMove();
             })
             .AddTo(this);
 
-        //HPŠÄ‹
+        //HPï¿½Äï¿½
         _characterHP
             .DistinctUntilChanged()
-            .Skip(1)//‰‰ñâ‘Îˆê‰ñŒÄ‚Î‚ê‚é‘Îô
+            .Skip(1)//ï¿½ï¿½ï¿½ï¿½ï¿½Îˆï¿½ï¿½Ä‚Î‚ï¿½ï¿½Îï¿½
             .Subscribe(hp =>
             {
-                Debug.Log($"ƒLƒƒƒ‰‚ÌHP‚ª•Ï‚í‚Á‚½‚æIŒ»İHP: {hp}");
+                Debug.Log($"ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½HPï¿½ï¿½ï¿½Ï‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½HP: {hp}");
 
-                _uICharacterHp.SetHpValue(hp); //UI‚ÉƒZƒbƒg
+                _uICharacterHp.SetHpValue(hp); //UIï¿½ÉƒZï¿½bï¿½g
                 if (_characterSpecialLevel.Value >= 0 && _characterSpecialLevel.Value < 6)
                 {
-                    _characterSpecialLevel.Value += 1;//ƒXƒyƒVƒƒƒ‹ƒŒƒxƒ‹+1
+                    _characterSpecialLevel.Value += 1;//ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½+1
                 }
 
                 if (hp <= 0)
                 {
-                    Debug.Log("ƒLƒƒƒ‰‚ª‚â‚ç‚ê‚½I");
+                    Debug.Log("ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½I");
                 }
             })
             .AddTo(this);
 
-        //ƒXƒyƒVƒƒƒ‹ƒŒƒxƒ‹ŠÄ‹i0`6j
+        //ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Äï¿½ï¿½i0ï¿½`6ï¿½j
         _characterSpecialLevel
             .DistinctUntilChanged()
-            .Skip(1)//‰‰ñâ‘Îˆê‰ñŒÄ‚Î‚ê‚é‘Îô
+            .Skip(1)//ï¿½ï¿½ï¿½ï¿½ï¿½Îˆï¿½ï¿½Ä‚Î‚ï¿½ï¿½Îï¿½
             .Subscribe(specialLevel =>
             {
-                Debug.Log($"•KE‹Z‚ÌƒŒƒxƒ‹‚ª•Ï‚í‚Á‚½‚æIŒ»İSpecialLevel: {specialLevel}");
+                Debug.Log($"ï¿½Kï¿½Eï¿½Zï¿½Ìƒï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½Ï‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½SpecialLevel: {specialLevel}");
                 _uICharacterGauge.SpecialGaugeValueSet(specialLevel);
 
             })
             .AddTo(this);
 
-        //ƒ_ƒ[ƒWŠÄ‹iƒLƒƒƒ‰ƒNƒ^[‚ª”í’ej
+        //ï¿½_ï¿½ï¿½ï¿½[ï¿½Wï¿½Äï¿½ï¿½iï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½eï¿½ï¿½ï¿½j
         _getDamageSubject
             .Subscribe(damage => 
             {
@@ -122,7 +122,7 @@ public class CharacterLocator : MonoBehaviour
 
    
 
-        //ƒXƒyƒVƒƒƒ‹
+        //ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½
         Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(KeyCode.Space))
             .Subscribe(_ => {
@@ -130,7 +130,7 @@ public class CharacterLocator : MonoBehaviour
             })
             .AddTo(this);
 
-        //ƒXƒLƒ‹
+        //ï¿½Xï¿½Lï¿½ï¿½
         Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(KeyCode.LeftControl))
             .Subscribe(_ => {
@@ -138,10 +138,10 @@ public class CharacterLocator : MonoBehaviour
             })
             .AddTo(this);
 
-        //ƒAƒ^ƒbƒNí—Ş•ÏX
+        //ï¿½Aï¿½^ï¿½bï¿½Nï¿½ï¿½Ş•ÏX
         _characterAttackLevel
-            .DistinctUntilChanged()//“¯‚¶’l‚È‚ç–³‹
-            .Subscribe(attackLevel => //’l‚ªˆø”‚Å©“®‚Å“ü‚é
+            .DistinctUntilChanged()//ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½È‚ç–³ï¿½ï¿½
+            .Subscribe(attackLevel => //ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½ï¿½ï¿½Å“ï¿½ï¿½ï¿½
             {
                 CharacterAttackSet(attackLevel);
             });
@@ -171,7 +171,7 @@ public class CharacterLocator : MonoBehaviour
             return;
         }
 
-        // Ÿ‚É’P‘Ì•ûŒü
+        // ï¿½ï¿½ï¿½É’Pï¿½Ì•ï¿½ï¿½ï¿½
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             CharacterMoveSet(CharacterLocator.MotionType.Right);
@@ -193,7 +193,7 @@ public class CharacterLocator : MonoBehaviour
             return;
         }
 
-        // ‚Ç‚ÌƒL[‚à‰Ÿ‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç~‚Ü‚é
+        // ï¿½Ç‚ÌƒLï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Ü‚ï¿½
         CharacterMoveSet(CharacterLocator.MotionType.Default);
 
     }
@@ -202,39 +202,39 @@ public class CharacterLocator : MonoBehaviour
         switch (motionType)
         {
             case MotionType.Default:
-                _characterLocatorRigid.velocity = Vector2.zero;
+                _characterLocatorRigid.linearVelocity = Vector2.zero;
                 SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
                 break;
             case MotionType.Left:
-                _characterLocatorRigid.velocity = new Vector2(-1 , 0) * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(-1 , 0) * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
                 break;
             case MotionType.Right:
-                _characterLocatorRigid.velocity = new Vector2(1, 0) * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(1, 0) * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
                 break;
             case MotionType.Up:
-                _characterLocatorRigid.velocity = new Vector2(0, 1) * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(0, 1) * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
                 break;
             case MotionType.Down:
-                _characterLocatorRigid.velocity = new Vector2(0, -1) * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(0, -1) * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
                 break;
             case MotionType.LeftUp:
-                _characterLocatorRigid.velocity = new Vector2(-1 , 1).normalized * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(-1 , 1).normalized * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
                 break;
             case MotionType.RightUp:
-                _characterLocatorRigid.velocity = new Vector2(1 , 1).normalized * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(1 , 1).normalized * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
                 break;
             case MotionType.LeftDown:
-                _characterLocatorRigid.velocity = new Vector2(-1, -1).normalized * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(-1, -1).normalized * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
                 break;
             case MotionType.RightDown:
-                _characterLocatorRigid.velocity = new Vector2(1 , -1).normalized * _characterVelocity;
+                _characterLocatorRigid.linearVelocity = new Vector2(1 , -1).normalized * _characterVelocity;
                 SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
                 break;
         }
@@ -249,7 +249,7 @@ public class CharacterLocator : MonoBehaviour
     }
   
 
-    public async UniTaskVoid CharacterSpecialSet()//ƒXƒyƒVƒƒƒ‹‚Ìˆ—
+    public async UniTaskVoid CharacterSpecialSet()//ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
     {
 
         if(_characterSpecialLevel.Value >= 6 && _isSpecialActive == false)
@@ -257,7 +257,7 @@ public class CharacterLocator : MonoBehaviour
             _isSpecialActive = true;
 
             _characterSpecialLevel.Value = 0;
-            //ƒXƒyƒVƒƒƒ‹ˆ—
+            //ï¿½Xï¿½yï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             _characterSpecial.SetActive(true);
             await UniTask.Delay(TimeSpan.FromSeconds(_specialTime));
             _characterSpecial.SetActive(false);
@@ -267,25 +267,25 @@ public class CharacterLocator : MonoBehaviour
            
     }
 
-    public async UniTaskVoid CharacterSkillSet()//ƒXƒLƒ‹ˆ—BƒXƒLƒ‹‚ğg‚Á‚½‚ç‚g‚oÁ”ï‚µ‚ÄƒAƒ^ƒbƒNƒŒƒxƒ‹‚ğ‚ ‚°‚éB
+    public async UniTaskVoid CharacterSkillSet()//ï¿½Xï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Bï¿½Xï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½oï¿½ï¿½ï¿½ï‚µï¿½ÄƒAï¿½^ï¿½bï¿½Nï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
     {
-        //HP‚ğ1Œ¸‚ç‚·
+        //HPï¿½ï¿½1ï¿½ï¿½ï¿½ç‚·
         _characterHP.Value -= 1;
 
-        //AttackƒŒƒxƒ‹‚ğ‚ ‚°‚éB0`5
+        //Attackï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B0ï¿½`5
         if(_characterAttackLevel.Value < 5)
         {
             _characterAttackLevel.Value += 1;
         }
-        //’e‚ğ‘‚â‚·‚Ì‚ÍCharacterAttack‚Å
-        //ˆê’èŠÔŒã‚ÉAttackƒŒƒxƒ‹‚ğ‰º‚°‚é
+        //ï¿½eï¿½ğ‘‚â‚·ï¿½Ì‚ï¿½CharacterAttackï¿½ï¿½
+        //ï¿½ï¿½èï¿½ÔŒï¿½ï¿½Attackï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-        // ‘O‰ñ‚ÌƒLƒƒƒ“ƒZƒ‹ˆ—i‚ ‚éê‡j
+        // ï¿½Oï¿½ï¿½ÌƒLï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½ê‡ï¿½j
         _attackLevelCts?.Cancel();
         _attackLevelCts = new CancellationTokenSource();
         var token = _attackLevelCts.Token;
 
-        // V‚µ‚¢‰º‚°ˆ—‚ğƒXƒ^[ƒgiŒJ‚è•Ô‚µj
+        // ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½gï¿½iï¿½Jï¿½ï¿½Ô‚ï¿½ï¿½j
         DecreaseAttackLevelOverTime(token).Forget();
 
     }
@@ -305,13 +305,13 @@ public class CharacterLocator : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            // ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½‚Æ‚«‚Í‰½‚à‚µ‚È‚¢
+            // ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Æ‚ï¿½ï¿½Í‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
         }
     }
 
     public void CharacterAttackSet(int characterAttackLevel)
     {
-        //ƒAƒ^ƒbƒNƒŒƒxƒ‹‚É‚æ‚Á‚Ä’e‚ğ•Ï‚¦‚é
+        //ï¿½Aï¿½^ï¿½bï¿½Nï¿½ï¿½ï¿½xï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½Ä’eï¿½ï¿½Ï‚ï¿½ï¿½ï¿½
         switch (characterAttackLevel)
         {
             case 0:
