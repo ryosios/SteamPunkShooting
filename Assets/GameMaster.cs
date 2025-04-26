@@ -18,6 +18,7 @@ public class GameMaster : MonoBehaviour
     public Button TestButtonS;
     public Button TestButtonC;
     public Button TestButtonN;
+    
 
     [Header("テスト用変数")]
     [SerializeField] private int _testChapterNumber;

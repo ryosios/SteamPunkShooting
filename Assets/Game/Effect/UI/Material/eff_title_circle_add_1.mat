@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7140055043365582765
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -20,27 +7,26 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: eff_special_gauge_smoke_1
-  m_Shader: {fileID: 4800000, guid: 72225468864e7e849bc3e630d1756259, type: 3}
+  m_Name: eff_title_circle_add_1
+  m_Shader: {fileID: 10720, guid: 0000000000000000f000000000000000, type: 0}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
   - _ALPHA_TRANSITION_MAP_MODE_2D
   - _BASE_MAP_MODE_2D
   - _EMISSION_COLOR_COLOR
   - _EMISSION_MAP_MODE_2D
   - _FADE_TRANSITION_ENABLED
-  - _FLOW_MAP_TARGET_BASE
   - _PARALLAX_MAP_MODE_2D
   - _TINT_COLOR_ENABLED
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses:
+  - MOTIONVECTORS
   - SHADOWCASTER
   m_LockedProperties: 
   m_SavedProperties:
@@ -48,7 +34,7 @@ Material:
     m_TexEnvs:
     - _AlphaTransitionMap:
         m_Texture: {fileID: 2800000, guid: 334d571bad5e10140a28048132ad6dc4, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
     - _AlphaTransitionMap2DArray:
         m_Texture: {fileID: 0}
@@ -71,9 +57,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: 699863a5daf338d4d8990bee767c66b1, type: 3}
+        m_Texture: {fileID: 2800000, guid: a7d60a110531a374e9264fa075726d04, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0.18, y: 0.29}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap2DArray:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -115,7 +101,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FlowMap:
-        m_Texture: {fileID: 2800000, guid: 334d571bad5e10140a28048132ad6dc4, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GradientMap:
@@ -123,7 +109,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 699863a5daf338d4d8990bee767c66b1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4815199205dc31b4fa721ddc7f1e7638, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -176,6 +162,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _AlphaTransitionMapChannelsX: 0
@@ -193,7 +180,7 @@ Material:
     - _AlphaTransitionMapSliceCount: 4
     - _AlphaTransitionMode: 1
     - _AlphaTransitionProgress: 0
-    - _AlphaTransitionProgressCoord: 11
+    - _AlphaTransitionProgressCoord: 1
     - _AlphaTransitionProgressCoordSecondTexture: 0
     - _AlphaTransitionProgressSecondTexture: 0
     - _AlphaTransitionSecondTextureBlendMode: 0
@@ -239,11 +226,11 @@ Material:
     - _EmissionMapProgressCoord: 0
     - _EmissionMapSliceCount: 4
     - _EnvironmentReflections: 1
-    - _FlowIntensity: 0.34
+    - _FlowIntensity: 1
     - _FlowIntensityCoord: 0
     - _FlowMapChannelsX: 0
     - _FlowMapChannelsY: 1
-    - _FlowMapOffsetXCoord: 1
+    - _FlowMapOffsetXCoord: 0
     - _FlowMapOffsetYCoord: 0
     - _FlowMapTarget: 1
     - _GlossMapScale: 0
@@ -318,7 +305,7 @@ Material:
     - _VertexDeformationEnabled: 0
     - _VertexDeformationIntensity: 0.1
     - _VertexDeformationIntensityCoord: 0
-    - _VertexDeformationMapChannel: 3
+    - _VertexDeformationMapChannel: 0
     - _VertexDeformationMapOffsetXCoord: 0
     - _VertexDeformationMapOffsetYCoord: 0
     - _WorkflowMode: 1
@@ -333,3 +320,17 @@ Material:
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _TintColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &5038521798772482107
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 9

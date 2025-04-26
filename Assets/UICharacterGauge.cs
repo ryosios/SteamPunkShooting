@@ -30,13 +30,13 @@ public class UICharacterGauge : MonoBehaviour
     {
         if (specialLevel <= 6 && specialLevel >= 1)
         {
-            _specialGaugeArrow.DOLocalRotate(new Vector3(0, 0, specialLevel * 40), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutExpo);
+            _specialGaugeArrow.DOLocalRotate(new Vector3(0, 0, specialLevel * 40), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutBounce);
             _effectSpecialGaugeSmoke.Play();
             Debug.Log(specialLevel);
         }
         else
         {
-            _specialGaugeArrow.DOLocalRotate(new Vector3(0, 0, specialLevel * 40), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutExpo);
+            _specialGaugeArrow.DOLocalRotate(new Vector3(0, 0, specialLevel * 40), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutBounce);
             Debug.Log(specialLevel);
         }
    
