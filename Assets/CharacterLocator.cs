@@ -24,22 +24,23 @@ public class CharacterLocator : MonoBehaviour
 
     private float _characterVelocity { get; set; } = 5f;
 
-    //Hp�֘A
+    //HP管理用
     public ReactiveProperty<int> _characterHP { get; set; } = new ReactiveProperty<int>(5);
-    public Subject<int> _getDamageSubject = new Subject<int>();//��e�C�x���g
+    public Subject<int> _getDamageSubject = new Subject<int>();//ダメージ受けたとき
 
-    //�X�y�V�����֘A
-    public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //�X�y�V�����Q�[�W�B���x��0�`6�B40�x�����݁B
-    public Subject<Unit> _playSpecialSubject = new Subject<Unit>();//�X�y�V�����������Ƃ��̃C�x���g
-    private float _specialTime = 2f; //2�b�ԃX�y�V�����Œe������
+    //スペシャル用
+    public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //スペシャルレベル
+    public Subject<Unit> _playSpecialSubject = new Subject<Unit>();//スぺシャル撃ったとき
+    private float _specialTime = 2f; //スペシャルの効果時間
     private bool _isSpecialActive = false;
  
-    //�X�L���֘A
-    public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//�L�����N�^�[�̒e�̃��x��
-    private float _attackLevelTime = 7f; //7�b�Ԃ�������A�^�b�N���x����������
+    //スキル。レベルがあがるとアタックが強化される
+    public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//アタックレベル
+    private float _attackLevelTime = 7f; //アタックレベルが元に戻るまで
     private CancellationTokenSource _attackLevelCts;
 
-
+    //移動用
+    private Vector3 _previousPos;
 
 
 
@@ -64,50 +65,50 @@ public class CharacterLocator : MonoBehaviour
         
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
-        CharacterAttackSet(_characterAttackLevel.Value);//�A�^�b�N���x���ɂ���Ēe��ς���B�����ݒ�B
-        _characterSpineSA.state.SetAnimation(1, "blink", true);//�܂΂����A�j���[�V�������g���b�N1�ɍ���
+        CharacterAttackSet(_characterAttackLevel.Value);//
+        _characterSpineSA.state.SetAnimation(1, "blink", true);//まばたき合成
 
-        //�ړ�
+        //移動用
         Observable.EveryUpdate()
             .Subscribe(_ => {
                 CharacterMove();
             })
             .AddTo(this);
 
-        //HP�Ď�
+        //HP
         _characterHP
             .DistinctUntilChanged()
-            .Skip(1)//�����Έ��Ă΂��΍�
+            .Skip(1)//最初の1回目が自動再生されるのを回避
             .Subscribe(hp =>
             {
-                Debug.Log($"�L������HP���ς������I����HP: {hp}");
+                Debug.Log("HP: {hp}");
 
-                _uICharacterHp.SetHpValue(hp); //UI�ɃZ�b�g
+                _uICharacterHp.SetHpValue(hp); //UIのHPにセット
                 if (_characterSpecialLevel.Value >= 0 && _characterSpecialLevel.Value < 6)
                 {
-                    _characterSpecialLevel.Value += 1;//�X�y�V�������x��+1
+                    _characterSpecialLevel.Value += 1;//ダメージうけたらスペシャルレベルがあがる
                 }
 
                 if (hp <= 0)
                 {
-                    Debug.Log("�L���������ꂽ�I");
+                    Debug.Log("ゲームオーバー時");
                 }
             })
             .AddTo(this);
 
-        //�X�y�V�������x���Ď��i0�`6�j
+        //スペシャル
         _characterSpecialLevel
             .DistinctUntilChanged()
-            .Skip(1)//�����Έ��Ă΂��΍�
+            .Skip(1)//最初の1回目が自動再生されるのを回避
             .Subscribe(specialLevel =>
             {
-                Debug.Log($"�K�E�Z�̃��x�����ς������I����SpecialLevel: {specialLevel}");
+                
                 _uICharacterGauge.SpecialGaugeValueSet(specialLevel);
 
             })
             .AddTo(this);
 
-        //�_���[�W�Ď��i�L�����N�^�[����e���j
+        //被ダメ時
         _getDamageSubject
             .Subscribe(damage => 
             {
@@ -122,7 +123,7 @@ public class CharacterLocator : MonoBehaviour
 
    
 
-        //�X�y�V����
+        //スペシャル起動を監視
         Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(KeyCode.Space))
             .Subscribe(_ => {
@@ -130,7 +131,7 @@ public class CharacterLocator : MonoBehaviour
             })
             .AddTo(this);
 
-        //�X�L��
+        //スキル起動を監視
         Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(KeyCode.LeftControl))
             .Subscribe(_ => {
@@ -138,10 +139,10 @@ public class CharacterLocator : MonoBehaviour
             })
             .AddTo(this);
 
-        //�A�^�b�N��ޕύX
+        //アタック（スキル）レベルを監視
         _characterAttackLevel
-            .DistinctUntilChanged()//�����l�Ȃ疳��
-            .Subscribe(attackLevel => //�l�������Ŏ����œ���
+            .DistinctUntilChanged()//値が同じ場合は無視
+            .Subscribe(attackLevel => 
             {
                 CharacterAttackSet(attackLevel);
             });
@@ -150,53 +151,78 @@ public class CharacterLocator : MonoBehaviour
 
     private void CharacterMove()
     {
+       
+     
         if ((Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.W)) || (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow)))
         {
             CharacterMoveSet(CharacterLocator.MotionType.RightUp);
+            CharacterMoveRange();
             return;
         }
         if ((Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.W)) || (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow)))
         {
             CharacterMoveSet(CharacterLocator.MotionType.LeftUp);
+            CharacterMoveRange();
             return;
         }
         if ((Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.S)) || (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.DownArrow)))
         {
             CharacterMoveSet(CharacterLocator.MotionType.RightDown);
+            CharacterMoveRange();
             return;
         }
         if ((Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.S)) || (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.DownArrow)))
         {
             CharacterMoveSet(CharacterLocator.MotionType.LeftDown);
+            CharacterMoveRange();
             return;
         }
 
-        // ���ɒP�̕���
+       
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             CharacterMoveSet(CharacterLocator.MotionType.Right);
+            CharacterMoveRange();
             return;
         }
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             CharacterMoveSet(CharacterLocator.MotionType.Left);
+            CharacterMoveRange();
             return;
         }
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
             CharacterMoveSet(CharacterLocator.MotionType.Up);
+            CharacterMoveRange();
             return;
         }
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             CharacterMoveSet(CharacterLocator.MotionType.Down);
+            CharacterMoveRange();
             return;
         }
 
-        // �ǂ̃L�[��������Ă��Ȃ�������~�܂�
+        
         CharacterMoveSet(CharacterLocator.MotionType.Default);
 
     }
+
+    private void CharacterMoveRange()
+    {
+        if (this.transform.localPosition.x < -18 || this.transform.localPosition.x > 18 )
+        {
+            this.transform.localPosition = new Vector2(_previousPos.x, this.transform.localPosition.y);
+        }
+       
+        if (this.transform.localPosition.y > 5 || this.transform.localPosition.y < -43)
+        {
+            this.transform.localPosition = new Vector2(this.transform.localPosition.x,_previousPos.y );
+        }
+        _previousPos = this.transform.localPosition;
+    }
+
     public void CharacterMoveSet( MotionType motionType)
     {
         switch (motionType)
@@ -249,7 +275,7 @@ public class CharacterLocator : MonoBehaviour
     }
   
 
-    public async UniTaskVoid CharacterSpecialSet()//�X�y�V�����̏���
+    public async UniTaskVoid CharacterSpecialSet()//スペシャルの処理
     {
 
         if(_characterSpecialLevel.Value >= 6 && _isSpecialActive == false)
@@ -257,7 +283,7 @@ public class CharacterLocator : MonoBehaviour
             _isSpecialActive = true;
 
             _characterSpecialLevel.Value = 0;
-            //�X�y�V��������
+            //_specialTimeの間全画面攻撃
             _characterSpecial.SetActive(true);
             await UniTask.Delay(TimeSpan.FromSeconds(_specialTime));
             _characterSpecial.SetActive(false);
@@ -267,25 +293,22 @@ public class CharacterLocator : MonoBehaviour
            
     }
 
-    public async UniTaskVoid CharacterSkillSet()//�X�L�������B�X�L�����g������g�o����ăA�^�b�N���x����������B
+    public async UniTaskVoid CharacterSkillSet()//スキル処理
     {
-        //HP��1���炷
+        //HP自傷
         _characterHP.Value -= 1;
 
-        //Attack���x����������B0�`5
+        //Attackレベルをあげる
         if(_characterAttackLevel.Value < 5)
         {
             _characterAttackLevel.Value += 1;
         }
-        //�e�𑝂₷�̂�CharacterAttack��
-        //��莞�Ԍ��Attack���x����������
 
-        // �O��̃L�����Z�������i����ꍇ�j
-        _attackLevelCts?.Cancel();
+        //キャンセル用トークン
+        _attackLevelCts?.Cancel();//前の処理をキャンセル
         _attackLevelCts = new CancellationTokenSource();
         var token = _attackLevelCts.Token;
 
-        // �V���������������X�^�[�g�i�J��Ԃ��j
         DecreaseAttackLevelOverTime(token).Forget();
 
     }
@@ -305,13 +328,13 @@ public class CharacterLocator : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            // �L�����Z�����ꂽ�Ƃ��͉������Ȃ�
+            //例外
         }
     }
 
     public void CharacterAttackSet(int characterAttackLevel)
     {
-        //�A�^�b�N���x���ɂ���Ēe��ς���
+        //アタックレベルで攻撃変わる
         switch (characterAttackLevel)
         {
             case 0:
@@ -369,5 +392,10 @@ public class CharacterLocator : MonoBehaviour
     {
         var current = skeleton.AnimationState.GetCurrent(trackIndex);
         return current != null && current.Animation != null && current.Animation.Name == animationName;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log($"{collision.gameObject.name} とぶつかった！");
     }
 }
