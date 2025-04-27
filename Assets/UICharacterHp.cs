@@ -40,7 +40,7 @@ public class UICharacterHp : MonoBehaviour
             //_hPStarsUpperRect[i].gameObject.SetActive(true);
             _hPStarsUpperImage[i].color = new Color(1f, 1f, 1f, 1f);           
         }
-        if(nowHp > 0)
+        if(nowHp >= 0 && nowHp < 10)
         {
             _hPStarsUpperParticle[nowHp].Play();
         }
