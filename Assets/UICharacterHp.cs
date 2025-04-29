@@ -20,7 +20,7 @@ public class UICharacterHp : MonoBehaviour
         _hPStarsUpperParticle = new ParticleSystem[_hPStarsUpperRect.Length];
         for (int i = 0; i< _hPStarsUpperRect.Length; i++)
         {
-            Debug.Log(_hPStarsUpperRect[i]);
+           
             _hPStarsUpperImage[i] = _hPStarsUpperRect[i].gameObject.GetComponent<Image>();
             _hPStarsUpperParticle[i] = _hPStarsUpperRect[i].GetComponentInChildren<ParticleSystem>();
         }

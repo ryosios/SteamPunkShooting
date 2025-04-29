@@ -7,6 +7,7 @@ using System;
 using UniRx;
 using Spine.Unity;
 using System.Threading;
+using DG.Tweening;
 
 
 public class CharacterLocator : MonoBehaviour
@@ -19,7 +20,9 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private SkeletonAnimation _characterSpineSA;
 
     [Header("AttackType")]
-    [SerializeField] private GameObject[] _characterAttackObject ;
+    [SerializeField] private ParticleSystem[] _characterAttackObject;
+    [SerializeField] private TransformFadeGroup[] _bitsFadeGroup;
+    private Tween _attackTween;
 
 
     private float _characterVelocity { get; set; } = 5f;
@@ -147,6 +150,11 @@ public class CharacterLocator : MonoBehaviour
                 CharacterAttackSet(attackLevel);
             });
 
+    }
+
+    private void OnDestroy()
+    {
+        _attackTween?.Kill();
     }
 
     private void CharacterMove()
@@ -299,7 +307,7 @@ public class CharacterLocator : MonoBehaviour
         _characterHP.Value -= 1;
 
         //Attackレベルをあげる
-        if(_characterAttackLevel.Value < 5)
+        if(_characterAttackLevel.Value < 4)
         {
             _characterAttackLevel.Value += 1;
         }
@@ -332,49 +340,112 @@ public class CharacterLocator : MonoBehaviour
         }
     }
 
+
     public void CharacterAttackSet(int characterAttackLevel)
     {
         //アタックレベルで攻撃変わる
+        Debug.Log("アタックレベル" +characterAttackLevel);
         switch (characterAttackLevel)
         {
             case 0:
-                _characterAttackObject[0].SetActive(true);
-                _characterAttackObject[1].SetActive(false);
-                _characterAttackObject[2].SetActive(false);
-                _characterAttackObject[3].SetActive(false);
-                _characterAttackObject[4].SetActive(false);
+                _characterAttackObject[0].Play();
+                _characterAttackObject[1].Stop();
+                _characterAttackObject[2].Stop();
+                _characterAttackObject[3].Stop();
+                _characterAttackObject[4].Stop();
+                foreach(TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
+                {
+                    bitFadeGroup._spriteAlpha.Value = 0;
+                }
+
+                if(_attackTween != null) {_attackTween.Kill();}
+                _attackTween = DOTween.To
+                    (
+                         () => _bitsFadeGroup[0]._spriteAlpha.Value,// 現在値を取得する関数（DOGetter）
+                         x => _bitsFadeGroup[0]._spriteAlpha.Value = x, // 値を設定する関数（DOSetter）
+                         1f, // アニメーションの終了値
+                         0.5f// アニメーション時間（秒）
+                    );
 
                 break;
             case 1:
-                _characterAttackObject[0].SetActive(true);
-                _characterAttackObject[1].SetActive(true);
-                _characterAttackObject[2].SetActive(false);
-                _characterAttackObject[3].SetActive(false);
-                _characterAttackObject[4].SetActive(false);
+                _characterAttackObject[0].Stop();
+                _characterAttackObject[1].Play();
+                _characterAttackObject[2].Stop();
+                _characterAttackObject[3].Stop();
+                _characterAttackObject[4].Stop();
+                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
+                {
+                    bitFadeGroup._spriteAlpha.Value = 0;
+                }
+                if (_attackTween != null) { _attackTween.Kill(); }
+                _attackTween = DOTween.To
+                    (
+                         () => _bitsFadeGroup[1]._spriteAlpha.Value,
+                         x => _bitsFadeGroup[1]._spriteAlpha.Value = x,
+                         1f,
+                         0.5f
+                    );
 
                 break;
             case 2:
-                _characterAttackObject[0].SetActive(true);
-                _characterAttackObject[1].SetActive(true);
-                _characterAttackObject[2].SetActive(true);
-                _characterAttackObject[3].SetActive(false);
-                _characterAttackObject[4].SetActive(false);
+                _characterAttackObject[0].Stop();
+                _characterAttackObject[1].Stop();
+                _characterAttackObject[2].Play();
+                _characterAttackObject[3].Stop();
+                _characterAttackObject[4].Stop();
+                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
+                {
+                    bitFadeGroup._spriteAlpha.Value = 0;
+                }
+                if (_attackTween != null) { _attackTween.Kill(); }
+                _attackTween = DOTween.To
+                    (
+                         () => _bitsFadeGroup[2]._spriteAlpha.Value,
+                         x => _bitsFadeGroup[2]._spriteAlpha.Value = x,
+                         1f,
+                         0.5f
+                    );
 
                 break;
             case 3:
-                _characterAttackObject[0].SetActive(true);
-                _characterAttackObject[1].SetActive(true);
-                _characterAttackObject[2].SetActive(true);
-                _characterAttackObject[3].SetActive(true);
-                _characterAttackObject[4].SetActive(false);
+                _characterAttackObject[0].Stop();
+                _characterAttackObject[1].Stop();
+                _characterAttackObject[2].Stop();
+                _characterAttackObject[3].Play();
+                _characterAttackObject[4].Stop();
+                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
+                {
+                    bitFadeGroup._spriteAlpha.Value = 0;
+                }
+                if (_attackTween != null) { _attackTween.Kill(); }
+                _attackTween = DOTween.To
+                    (
+                         () => _bitsFadeGroup[3]._spriteAlpha.Value,
+                         x => _bitsFadeGroup[3]._spriteAlpha.Value = x,
+                         1f,
+                         0.5f
+                    );
 
                 break;
             case 4:
-                _characterAttackObject[0].SetActive(true);
-                _characterAttackObject[1].SetActive(true);
-                _characterAttackObject[2].SetActive(true);
-                _characterAttackObject[3].SetActive(true);
-                _characterAttackObject[4].SetActive(true);
+                _characterAttackObject[0].Stop();
+                _characterAttackObject[1].Stop();
+                _characterAttackObject[2].Stop();
+                _characterAttackObject[3].Stop();
+                _characterAttackObject[4].Play();
+                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
+                {
+                    bitFadeGroup._spriteAlpha.Value = 0;
+                }
+                if (_attackTween != null) { _attackTween.Kill(); }
+                _attackTween = DOTween.To
+                    (
+                         () => _bitsFadeGroup[4]._spriteAlpha.Value,
+                         x => _bitsFadeGroup[4]._spriteAlpha.Value = x,
+                         1f,
+                         0.5f
+                    );
 
                 break;
         }

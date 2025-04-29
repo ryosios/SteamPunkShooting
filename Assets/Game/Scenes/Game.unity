@@ -5338,7 +5338,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.38}
-  m_LocalScale: {x: 1.9480276, y: 0.5612657, z: 1.9480276}
+  m_LocalScale: {x: 1.37, y: 0.32, z: 1.9480276}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1661729398}
@@ -5867,7 +5867,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 0.9540715, b: 0.8254717, a: 1}
+  m_Color: {r: 1, g: 0.8955975, b: 0.6084906, a: 1}
   m_Intensity: 1.5
   m_Range: 10
   m_SpotAngle: 30
@@ -5930,13 +5930,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1347451021}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.8352587, y: 0.4044438, z: 0.02011534, w: -0.37197238}
+  m_LocalRotation: {x: -0.8469619, y: 0.43277246, z: 0.067172244, w: -0.30141574}
   m_LocalPosition: {x: 0, y: 8.86, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 37.237, y: 204.843, z: -119.838}
+  m_LocalEulerAnglesHint: {x: 26.9, y: 204.843, z: -119.838}
 --- !u!114 &1347451024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6299,7 +6299,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1741062985
 Transform:
   m_ObjectHideFlags: 0
@@ -8149,11 +8149,6 @@ PrefabInstance:
       propertyPath: _uICharacterGauge
       value: 
       objectReference: {fileID: 852469034}
-    - target: {fileID: 8534472817016875481, guid: d699dae32a7bdcd4aa9c06f10898bb95,
-        type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
