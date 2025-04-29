@@ -14,7 +14,6 @@ public class Chapter1 : ChapterBase
     private EnemyLocator[] _enemyLocators;
 
     private List<EnemyLocator> _enemyLocatorsAlliveList = new List<EnemyLocator>(); //生きてる扱いのEnemyLocatorをいれておくリスト
-    private List<EnemyLocator> _enemyLocatorsLoserList = new List<EnemyLocator>(); //しんだ扱いのEnemyLocatorをいれておくリスト
     public override ReactiveProperty<int> _selectNumber { get; set; } = new ReactiveProperty<int>(0);
 
     [HideInInspector] public DG.Tweening.Sequence _sequence;
@@ -120,12 +119,11 @@ public class Chapter1 : ChapterBase
 
     private void NextChapterCompleteEnemy()
     {
-        for ( int i = 0; i < _enemyLocators.Length; i++)
+        foreach (var _enemy in _enemyLocatorsAlliveList)
         {
-            if (_enemyLocatorsAlliveList[i]._isAlive == false)
+            if (!_enemy._isAlive)
             {
-                _enemyLocatorsAlliveList.Remove(_enemyLocatorsAlliveList[i]);
-                _enemyLocatorsLoserList.Add(_enemyLocatorsAlliveList[i]);
+                _enemyLocatorsAlliveList.Remove(_enemy);
             }
         }
 
@@ -135,9 +133,8 @@ public class Chapter1 : ChapterBase
             Debug.Log("kokokamo");
             NextChapter();
             _enemyLocatorsAlliveList.Clear();
-            _enemyLocatorsLoserList.Clear();
         }
-       
+
     }
 
     private void NextChapter()
