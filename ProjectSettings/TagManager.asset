@@ -6,6 +6,7 @@ TagManager:
   tags:
   - UIHp
   - CharacterSpecial
+  - Enemy
   layers:
   - Default
   - TransparentFX

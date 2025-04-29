@@ -5,8 +5,9 @@ using System;
 using Cysharp.Threading.Tasks;
 using UniRx;
 
-public class ParticleController : MonoBehaviour
+public class ParticleControllerEnemy : MonoBehaviour
 {
+    //エネミー側の弾がキャラクターにダメージを与えるスクリプト
     // Start is called before the first frame update
 
     [SerializeField] EnemyLocator _enemyLocator;
@@ -25,7 +26,6 @@ public class ParticleController : MonoBehaviour
         {
             Debug.Log("Hit");
             _enemyLocator._characterLocator._getDamageSubject.OnNext(_getDamagePointValue);
-           // _enemyLocator._characterLocator._getSpecialLevelSubject.OnNext(_getSpecialPointValue);
 
         }
         if (obj.tag == "CharacterSpecial")

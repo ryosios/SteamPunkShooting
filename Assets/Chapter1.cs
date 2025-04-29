@@ -10,8 +10,11 @@ public class Chapter1 : ChapterBase
     // Start is called before the first frame update
 
     [SerializeField] private GameMaster _gameMaster;
-    [SerializeField] private List<Transform> _enemys;
+    [SerializeField] private Transform[] _enemys;
+    private EnemyLocator[] _enemyLocators;
 
+    private List<EnemyLocator> _enemyLocatorsAlliveList = new List<EnemyLocator>(); //生きてる扱いのEnemyLocatorをいれておくリスト
+    private List<EnemyLocator> _enemyLocatorsLoserList = new List<EnemyLocator>(); //しんだ扱いのEnemyLocatorをいれておくリスト
     public override ReactiveProperty<int> _selectNumber { get; set; } = new ReactiveProperty<int>(0);
 
     [HideInInspector] public DG.Tweening.Sequence _sequence;
@@ -24,7 +27,17 @@ public class Chapter1 : ChapterBase
 
     void Awake()
     {
-        
+        _enemyLocators = new EnemyLocator[_enemys.Length];
+        for(int i = 0; i< _enemys.Length; i++)
+        {
+            //生存フラグ用にインスタンスごとのEnemyLocatorを取得
+            _enemyLocators[i] = _enemys[i].GetComponent<EnemyLocator>();
+        }
+        foreach(var enemyLocator in _enemyLocators)
+        {
+            _enemyLocatorsAlliveList.Add(enemyLocator);
+        }
+
         _initEnemyPos = _enemys[0].localPosition;
 
         _selectNumber.Subscribe(selectNumber => SetChapter(selectNumber)).AddTo(this);
@@ -39,7 +52,7 @@ public class Chapter1 : ChapterBase
                 break;
             case 1:
                 _sequence = DOTween.Sequence();
-                for (int i = 0; i < _enemys.Count; i++)
+                for (int i = 0; i < _enemys.Length; i++)
                 {
                     if (_enemys[i] != null)
                     {
@@ -58,8 +71,8 @@ public class Chapter1 : ChapterBase
                 }
                 _sequence.OnUpdate(() =>
                 {
-                  
-                    NextChapterSet();
+                    //敵が全員負けリストに入ったら強制次チャプターへ
+                    NextChapterCompleteEnemy();
                 });
                 _sequence.OnComplete(() =>
                 {
@@ -74,7 +87,7 @@ public class Chapter1 : ChapterBase
                 _sequence.Kill();
                 _sequence = DOTween.Sequence();
 
-                for (int i = 0; i < _enemys.Count; i++)
+                for (int i = 0; i < _enemys.Length; i++)
                 {
                     if (_enemys[i] != null)
                     {
@@ -91,13 +104,11 @@ public class Chapter1 : ChapterBase
                 }
                 _sequence.OnUpdate(() =>
                 {
-                    NextChapterSet();
+                    NextChapterCompleteEnemy();
                 });
                 _sequence.OnComplete(() =>
                 {
-                    _selectNumber.Value += 1;
-                    _gameMaster._chapterNumber.Value += 1;
-                    _sequence.Kill();
+                    NextChapter();
                 });
                 _sequence.Play();
                 break;
@@ -106,13 +117,34 @@ public class Chapter1 : ChapterBase
 
     }
 
-    private void NextChapterSet()
+
+    private void NextChapterCompleteEnemy()
     {
-        if(_enemys.Count == 0)
+        for ( int i = 0; i < _enemyLocators.Length; i++)
         {
-            _gameMaster._chapterNumber.Value += 1;
-            _sequence.Kill();
+            if (_enemyLocatorsAlliveList[i]._isAlive == false)
+            {
+                _enemyLocatorsAlliveList.Remove(_enemyLocatorsAlliveList[i]);
+                _enemyLocatorsLoserList.Add(_enemyLocatorsAlliveList[i]);
+            }
         }
+
+        if (_enemyLocatorsAlliveList.Count == 0)
+        {
+            //敵全滅したら次チャプター
+            Debug.Log("kokokamo");
+            NextChapter();
+            _enemyLocatorsAlliveList.Clear();
+            _enemyLocatorsLoserList.Clear();
+        }
+       
+    }
+
+    private void NextChapter()
+    {
+        _selectNumber.Value += 1;
+        _gameMaster._chapterNumber.Value += 1;
+        _sequence.Kill();
     }
    
 }
