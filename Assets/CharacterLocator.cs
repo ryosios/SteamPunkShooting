@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UniRx;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 
 public class CharacterLocator : MonoBehaviour
@@ -25,8 +26,10 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private TransformFadeGroup[] _bitsFadeGroup;
     private Tween _attackTween;
 
-
-    private float _characterVelocity { get; set; } = 5f;
+    //速度周り
+    private float _characterVelocity { get; set; } = 3f;
+    private float _initCharacterVelocity;
+    private float _characterAnimationTimeScale = 1f;
 
     //HP管理用
     public ReactiveProperty<int> _characterHP { get; set; } = new ReactiveProperty<int>(5);
@@ -39,7 +42,6 @@ public class CharacterLocator : MonoBehaviour
     private bool _isSpecialActive = false;
 
     //スキル。レベルがあがるとアタックが強化される
-    
     public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//アタックレベル
     private float _attackLevelTime = 7f; //アタックレベルが元に戻るまで
     private CancellationTokenSource _attackLevelCts;
@@ -67,7 +69,7 @@ public class CharacterLocator : MonoBehaviour
 
     private void Awake()
     {
-        
+        _initCharacterVelocity = _characterVelocity;
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
         
@@ -153,6 +155,22 @@ public class CharacterLocator : MonoBehaviour
                         CharacterSkillSet();
                     })
                     .AddTo(this);
+
+                //左Shiftを監視。低速モード
+                Observable.EveryUpdate()
+                    .Where(_ => Input.GetKeyDown(KeyCode.LeftShift))
+                    .Subscribe(_ => {
+                        _characterVelocity *= 0.5f;
+                        _characterAnimationTimeScale *= 0.5f;
+                    })
+                    .AddTo(this);
+                Observable.EveryUpdate()
+                   .Where(_ => Input.GetKeyUp(KeyCode.LeftShift))
+                   .Subscribe(_ => {
+                       _characterVelocity = _initCharacterVelocity;
+                       _characterAnimationTimeScale = 1f;
+                   })
+                   .AddTo(this);
 
             })
             .AddTo(this);
@@ -244,39 +262,39 @@ public class CharacterLocator : MonoBehaviour
         {
             case MotionType.Default:
                 _characterLocatorRigid.linearVelocity = Vector2.zero;
-                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true , _characterAnimationTimeScale);
                 break;
             case MotionType.Left:
                 _characterLocatorRigid.linearVelocity = new Vector2(-1 , 0) * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_left", true, _characterAnimationTimeScale);
                 break;
             case MotionType.Right:
                 _characterLocatorRigid.linearVelocity = new Vector2(1, 0) * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_right", true, _characterAnimationTimeScale);
                 break;
             case MotionType.Up:
                 _characterLocatorRigid.linearVelocity = new Vector2(0, 1) * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true, _characterAnimationTimeScale);
                 break;
             case MotionType.Down:
                 _characterLocatorRigid.linearVelocity = new Vector2(0, -1) * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_forwardback", true, _characterAnimationTimeScale);
                 break;
             case MotionType.LeftUp:
                 _characterLocatorRigid.linearVelocity = new Vector2(-1 , 1).normalized * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_left", true, _characterAnimationTimeScale);
                 break;
             case MotionType.RightUp:
                 _characterLocatorRigid.linearVelocity = new Vector2(1 , 1).normalized * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_right", true, _characterAnimationTimeScale);
                 break;
             case MotionType.LeftDown:
                 _characterLocatorRigid.linearVelocity = new Vector2(-1, -1).normalized * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_left", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_left", true, _characterAnimationTimeScale);
                 break;
             case MotionType.RightDown:
                 _characterLocatorRigid.linearVelocity = new Vector2(1 , -1).normalized * _characterVelocity;
-                SetSpineAnimation(_characterSpineSA, 0, "run_right", true);
+                SetSpineAnimation(_characterSpineSA, 0, "run_right", true, _characterAnimationTimeScale);
                 break;
         }
     }
@@ -402,7 +420,7 @@ public class CharacterLocator : MonoBehaviour
         }
     }
 
-    private void CharacterAttackBitSet(int number)
+    private void CharacterAttackBitSet(int number)//キャラのビットの表示をセット
     {
         foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
         {
@@ -420,11 +438,13 @@ public class CharacterLocator : MonoBehaviour
             );
     }
 
-    private void SetSpineAnimation(SkeletonAnimation skeletonAnimation,int trackNumber , String animationName,bool loop)
+    private void SetSpineAnimation(SkeletonAnimation skeletonAnimation,int trackNumber , String animationName,bool loop , float timeScale)
     {
+        //キャラ用汎用アニメーションメソッド
+        skeletonAnimation.state.TimeScale = timeScale;
         if (!IsPlayingAnimation(skeletonAnimation, animationName, trackNumber))
         {
-            skeletonAnimation.state.SetAnimation(trackNumber, animationName, loop);
+            skeletonAnimation.state.SetAnimation(trackNumber, animationName, loop);     
         }
        
     }
