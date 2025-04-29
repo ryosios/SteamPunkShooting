@@ -11,6 +11,9 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private Animator _titleImageAnimator;
     [SerializeField] private RectTransform[] _titleTweenHaguruma;
 
+    //キャラクターの挙動開始フラグ
+    public Subject<UniRx.Unit> _playCharacterSubject = new Subject<UniRx.Unit>();//アタック撃つフラグ
+
     public ReactiveProperty<int> _stageNumber = new ReactiveProperty<int>(0);
     public ReactiveProperty<int> _chapterNumber = new ReactiveProperty<int>(0);
 
@@ -85,6 +88,7 @@ public class GameMaster : MonoBehaviour
                                         break;
                                     case 1:
                                         Debug.Log("1_chapter1");
+                                        _playCharacterSubject.OnNext(Unit.Default);
                                         _chapters[1]._selectNumber.Value = 1;
                                         //ChapterNumberを0にセットする処理が必要
                                         break;

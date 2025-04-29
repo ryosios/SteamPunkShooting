@@ -1,18 +1,19 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using Spine.Unity;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using Cysharp.Threading.Tasks;
-using System.Threading.Tasks;
-using System;
-using UniRx;
-using Spine.Unity;
 using System.Threading;
-using DG.Tweening;
+using System.Threading.Tasks;
+using UniRx;
+using Unity.VisualScripting;
+using UnityEngine;
 
 
 public class CharacterLocator : MonoBehaviour
 {
-   
+    [SerializeField] private GameMaster _gameMaster;
     [SerializeField] private Rigidbody2D _characterLocatorRigid;
     [SerializeField] private UICharacterGauge _uICharacterGauge;
     [SerializeField] private UICharacterHp _uICharacterHp;
@@ -33,11 +34,12 @@ public class CharacterLocator : MonoBehaviour
 
     //スペシャル用
     public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //スペシャルレベル
-    public Subject<Unit> _playSpecialSubject = new Subject<Unit>();//スぺシャル撃ったとき
+    public Subject<UniRx.Unit> _playSpecialSubject = new Subject<UniRx.Unit>();//スぺシャル撃ったとき
     private float _specialTime = 2f; //スペシャルの効果時間
     private bool _isSpecialActive = false;
- 
+
     //スキル。レベルがあがるとアタックが強化される
+    
     public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//アタックレベル
     private float _attackLevelTime = 7f; //アタックレベルが元に戻るまで
     private CancellationTokenSource _attackLevelCts;
@@ -68,7 +70,7 @@ public class CharacterLocator : MonoBehaviour
         
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
-        CharacterAttackSet(_characterAttackLevel.Value);//
+        
         _characterSpineSA.state.SetAnimation(1, "blink", true);//まばたき合成
 
         //移動用
@@ -99,56 +101,61 @@ public class CharacterLocator : MonoBehaviour
             })
             .AddTo(this);
 
-        //スペシャル
-        _characterSpecialLevel
-            .DistinctUntilChanged()
-            .Skip(1)//最初の1回目が自動再生されるのを回避
-            .Subscribe(specialLevel =>
+
+        //キャラクターの挙動開始タイミングを監視
+        _gameMaster._playCharacterSubject
+            .Subscribe(_ =>
             {
-                
-                _uICharacterGauge.SpecialGaugeValueSet(specialLevel);
+                //スペシャル
+                _characterSpecialLevel
+                    .DistinctUntilChanged()
+                    .Skip(1)//最初の1回目が自動再生されるのを回避
+                    .Subscribe(specialLevel =>
+                    {
+
+                        _uICharacterGauge.SpecialGaugeValueSet(specialLevel);
+
+                    })
+                    .AddTo(this);
+
+                //被ダメ時
+                _getDamageSubject
+                    .Subscribe(damage =>
+                    {
+                        if (_characterHP.Value > 0 && _characterHP.Value <= 10)
+                        {
+                            GetDamagePoint(damage);
+
+                        }
+                    })
+                    .AddTo(this);
+
+                //アタック（スキル）レベルを監視
+                _characterAttackLevel
+                    .DistinctUntilChanged()//値が同じ場合は無視
+                    .Subscribe(attackLevel =>
+                    {
+                        CharacterAttackSet(attackLevel);
+                    });
+
+                //スペースボタンを監視。スペシャル起動
+                Observable.EveryUpdate()
+                    .Where(_ => Input.GetKeyDown(KeyCode.Space))
+                    .Subscribe(_ => {
+                        CharacterSpecialSet();
+                    })
+                    .AddTo(this);
+
+                //左Ctrlを監視。スキル起動
+                Observable.EveryUpdate()
+                    .Where(_ => Input.GetKeyDown(KeyCode.LeftControl))
+                    .Subscribe(_ => {
+                        CharacterSkillSet();
+                    })
+                    .AddTo(this);
 
             })
             .AddTo(this);
-
-        //被ダメ時
-        _getDamageSubject
-            .Subscribe(damage => 
-            {
-                if (_characterHP.Value > 0 && _characterHP.Value <= 10)
-                {
-                    GetDamagePoint(damage);
-                   
-                }
-            })
-            .AddTo(this);
-
-
-   
-
-        //スペシャル起動を監視
-        Observable.EveryUpdate()
-            .Where(_ => Input.GetKeyDown(KeyCode.Space))
-            .Subscribe(_ => {
-                CharacterSpecialSet();
-            })
-            .AddTo(this);
-
-        //スキル起動を監視
-        Observable.EveryUpdate()
-            .Where(_ => Input.GetKeyDown(KeyCode.LeftControl))
-            .Subscribe(_ => {
-                CharacterSkillSet();
-            })
-            .AddTo(this);
-
-        //アタック（スキル）レベルを監視
-        _characterAttackLevel
-            .DistinctUntilChanged()//値が同じ場合は無視
-            .Subscribe(attackLevel => 
-            {
-                CharacterAttackSet(attackLevel);
-            });
 
     }
 
@@ -353,19 +360,7 @@ public class CharacterLocator : MonoBehaviour
                 _characterAttackObject[2].Stop();
                 _characterAttackObject[3].Stop();
                 _characterAttackObject[4].Stop();
-                foreach(TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
-                {
-                    bitFadeGroup._spriteAlpha.Value = 0;
-                }
-
-                if(_attackTween != null) {_attackTween.Kill();}
-                _attackTween = DOTween.To
-                    (
-                         () => _bitsFadeGroup[0]._spriteAlpha.Value,// 現在値を取得する関数（DOGetter）
-                         x => _bitsFadeGroup[0]._spriteAlpha.Value = x, // 値を設定する関数（DOSetter）
-                         1f, // アニメーションの終了値
-                         0.5f// アニメーション時間（秒）
-                    );
+                CharacterAttackBitSet(0);
 
                 break;
             case 1:
@@ -374,18 +369,7 @@ public class CharacterLocator : MonoBehaviour
                 _characterAttackObject[2].Stop();
                 _characterAttackObject[3].Stop();
                 _characterAttackObject[4].Stop();
-                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
-                {
-                    bitFadeGroup._spriteAlpha.Value = 0;
-                }
-                if (_attackTween != null) { _attackTween.Kill(); }
-                _attackTween = DOTween.To
-                    (
-                         () => _bitsFadeGroup[1]._spriteAlpha.Value,
-                         x => _bitsFadeGroup[1]._spriteAlpha.Value = x,
-                         1f,
-                         0.5f
-                    );
+                CharacterAttackBitSet(1);
 
                 break;
             case 2:
@@ -394,18 +378,7 @@ public class CharacterLocator : MonoBehaviour
                 _characterAttackObject[2].Play();
                 _characterAttackObject[3].Stop();
                 _characterAttackObject[4].Stop();
-                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
-                {
-                    bitFadeGroup._spriteAlpha.Value = 0;
-                }
-                if (_attackTween != null) { _attackTween.Kill(); }
-                _attackTween = DOTween.To
-                    (
-                         () => _bitsFadeGroup[2]._spriteAlpha.Value,
-                         x => _bitsFadeGroup[2]._spriteAlpha.Value = x,
-                         1f,
-                         0.5f
-                    );
+                CharacterAttackBitSet(2);
 
                 break;
             case 3:
@@ -414,18 +387,7 @@ public class CharacterLocator : MonoBehaviour
                 _characterAttackObject[2].Stop();
                 _characterAttackObject[3].Play();
                 _characterAttackObject[4].Stop();
-                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
-                {
-                    bitFadeGroup._spriteAlpha.Value = 0;
-                }
-                if (_attackTween != null) { _attackTween.Kill(); }
-                _attackTween = DOTween.To
-                    (
-                         () => _bitsFadeGroup[3]._spriteAlpha.Value,
-                         x => _bitsFadeGroup[3]._spriteAlpha.Value = x,
-                         1f,
-                         0.5f
-                    );
+                CharacterAttackBitSet(3);
 
                 break;
             case 4:
@@ -434,21 +396,28 @@ public class CharacterLocator : MonoBehaviour
                 _characterAttackObject[2].Stop();
                 _characterAttackObject[3].Stop();
                 _characterAttackObject[4].Play();
-                foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
-                {
-                    bitFadeGroup._spriteAlpha.Value = 0;
-                }
-                if (_attackTween != null) { _attackTween.Kill(); }
-                _attackTween = DOTween.To
-                    (
-                         () => _bitsFadeGroup[4]._spriteAlpha.Value,
-                         x => _bitsFadeGroup[4]._spriteAlpha.Value = x,
-                         1f,
-                         0.5f
-                    );
+                CharacterAttackBitSet(4);
 
                 break;
         }
+    }
+
+    private void CharacterAttackBitSet(int number)
+    {
+        foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
+        {
+            bitFadeGroup._spriteAlpha.Value = 0;
+        }
+
+        if (_attackTween != null) { _attackTween.Kill(); }
+
+        _attackTween = DOTween.To
+            (
+                 () => _bitsFadeGroup[number]._spriteAlpha.Value,
+                 x => _bitsFadeGroup[number]._spriteAlpha.Value = x,
+                 1f,
+                 0.5f
+            );
     }
 
     private void SetSpineAnimation(SkeletonAnimation skeletonAnimation,int trackNumber , String animationName,bool loop)
