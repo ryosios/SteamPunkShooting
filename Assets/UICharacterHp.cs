@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,11 +24,11 @@ public class UICharacterHp : MonoBehaviour
             _hPStarsUpperImage[i] = _hPStarsUpperRect[i].gameObject.GetComponent<Image>();
             _hPStarsUpperParticle[i] = _hPStarsUpperRect[i].GetComponentInChildren<ParticleSystem>();
         }
-        //‰ŠúHPİ’è
+        //åˆæœŸHPè¨­å®š
         SetHpValue(_characterLocator._characterHP.Value);
     }
 
-    public void SetHpValue(int nowHp)//UI‚ÉHP‚ğƒZƒbƒg
+    public void SetHpValue(int nowHp)//UIã«HPã‚’ã‚»ãƒƒãƒˆ
     {
         for (int i = 0; i < 10; i++)
         {

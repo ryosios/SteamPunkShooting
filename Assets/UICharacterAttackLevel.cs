@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,8 +16,8 @@ public class UICharacterAttackLevel : MonoBehaviour
         CharacterAttackGaugeSet(_characterLocator._characterAttackLevel.Value);
 
         _characterLocator._characterAttackLevel
-            .DistinctUntilChanged()//“¯‚¶’l‚È‚ç–³‹
-            .Subscribe(attackLevel => //’l‚ªˆø”‚Å©“®‚Å“ü‚é
+            .DistinctUntilChanged()//åŒã˜å€¤ãªã‚‰ç„¡è¦–
+            .Subscribe(attackLevel => //å€¤ãŒå¼•æ•°ã§è‡ªå‹•ã§å…¥ã‚‹
             {
                 CharacterAttackGaugeSet(attackLevel);
             });

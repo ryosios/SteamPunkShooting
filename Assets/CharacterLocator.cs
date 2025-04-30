@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Spine.Unity;
 using System;
@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UniRx;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.TextCore.Text;
 
 
@@ -20,6 +21,7 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private UICharacterHp _uICharacterHp;
     [SerializeField] private GameObject _characterSpecial;
     [SerializeField] private SkeletonAnimation _characterSpineSA;
+    [SerializeField] private PlayableDirector _cutinPlayable;
 
     [Header("AttackType")]
     [SerializeField] private ParticleSystem[] _characterAttackObject;
@@ -69,6 +71,7 @@ public class CharacterLocator : MonoBehaviour
 
     private void Awake()
     {
+        
         _initCharacterVelocity = _characterVelocity;
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
@@ -314,12 +317,18 @@ public class CharacterLocator : MonoBehaviour
         if(_characterSpecialLevel.Value >= 6 && _isSpecialActive == false)
         {
             _isSpecialActive = true;
-
+            
             _characterSpecialLevel.Value = 0;
-            //_specialTimeの間全画面攻撃
+            this.gameObject.layer = 6;//無敵レイヤー
+            _cutinPlayable.Play();
+            await UniTask.Delay(TimeSpan.FromSeconds(1.1f));//Completeとれないのでカットイン時間決め打ち
+            
+            //_specialTimeの間全画面攻撃。ここにミニキャラ側のスペシャル演出いれる
             _characterSpecial.SetActive(true);
+
             await UniTask.Delay(TimeSpan.FromSeconds(_specialTime));
             _characterSpecial.SetActive(false);
+            this.gameObject.layer = 3;//無敵解除
             _isSpecialActive = false;
 
         }
