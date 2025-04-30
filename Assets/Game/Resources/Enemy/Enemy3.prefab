@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 556657706953419555}
   - component: {fileID: 300814822025787320}
-  - component: {fileID: 6801807629405300443}
+  - component: {fileID: 2726380178581226121}
   m_Layer: 7
   m_Name: Enemy3
   m_TagString: Enemy
@@ -50,7 +50,7 @@ MonoBehaviour:
   _enemyBodyRect: {fileID: 3795945193569607696}
   _enemyAttackParticle: {fileID: 4395049191570231814}
   _Hp: 2
---- !u!58 &6801807629405300443
+--- !u!58 &2726380178581226121
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -4867,7 +4867,7 @@ GameObject:
   m_Component:
   - component: {fileID: 556657706953419555}
   - component: {fileID: 300814822025787320}
-  - component: {fileID: 8483296117805096293}
+  - component: {fileID: 3943265937954768700}
   m_Layer: 7
   m_Name: Enemy2
   m_TagString: Enemy
@@ -4907,7 +4907,7 @@ MonoBehaviour:
   _enemyBodyRect: {fileID: 3795945193569607696}
   _enemyAttackParticle: {fileID: 9138695710922593023}
   _Hp: 2
---- !u!58 &8483296117805096293
+--- !u!58 &3943265937954768700
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

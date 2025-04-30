@@ -10,6 +10,8 @@ public class EnemyLocator : MonoBehaviour
     [SerializeField] private Transform _enemyBodyRect;
     [SerializeField] private ParticleSystem _enemyAttackParticle;
 
+    private CircleCollider2D _thisCircleCollider;
+
     //HP
     [SerializeField] private int _Hp = 2;
     private ReactiveProperty<int> _enemyHp;
@@ -24,23 +26,25 @@ public class EnemyLocator : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        _thisCircleCollider = GetComponent<CircleCollider2D>();
         _characterLocator = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterLocator>();
 
         _enemyHp = new ReactiveProperty<int>(_Hp);
-        _enemyDamagedSubject.
+        _enemyDamagedSubject. //被ダメ時のイベント。HP0になるまで毎回呼ばれる
             Subscribe(damage =>
             {
                 _enemyHp.Value -= damage;
 
             }).AddTo(this);
 
-        _enemyHp
+        _enemyHp //HPが減った時のイベント
             .DistinctUntilChanged()
              .Subscribe(hp =>
              {
-                 if(hp == 0)
+                 if(hp == 0)//敵がしんだときのイベント
                  {
                      _isAlive = false;
+                     _thisCircleCollider.enabled = false;
                      _enemyBodyRect.gameObject.SetActive(false);
                      _enemyAttackParticle.Stop();
                  }
