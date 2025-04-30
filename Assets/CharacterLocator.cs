@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Spine;
 using Spine.Unity;
 using System;
 using System.Collections;
@@ -16,12 +17,14 @@ using UnityEngine.TextCore.Text;
 public class CharacterLocator : MonoBehaviour
 {
     [SerializeField] private GameMaster _gameMaster;
+    [SerializeField] private Transform _characterLocatorTrans;
     [SerializeField] private Rigidbody2D _characterLocatorRigid;
     [SerializeField] private UICharacterGauge _uICharacterGauge;
     [SerializeField] private UICharacterHp _uICharacterHp;
     [SerializeField] private GameObject _characterSpecial;
     [SerializeField] private SkeletonAnimation _characterSpineSA;
     [SerializeField] private PlayableDirector _cutinPlayable;
+    [SerializeField] private Transform _characterSpecialPosTrans;
 
     [Header("AttackType")]
     [SerializeField] private ParticleSystem[] _characterAttackObject;
@@ -42,6 +45,7 @@ public class CharacterLocator : MonoBehaviour
     public Subject<UniRx.Unit> _playSpecialSubject = new Subject<UniRx.Unit>();//スぺシャル撃ったとき
     private float _specialTime = 2f; //スペシャルの効果時間
     private bool _isSpecialActive = false;
+    private Vector3 _characterSpecialPos;
 
     //スキル。レベルがあがるとアタックが強化される
     public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//アタックレベル
@@ -71,8 +75,14 @@ public class CharacterLocator : MonoBehaviour
 
     private void Awake()
     {
-        
+        _characterSpecialPos = _characterSpecialPosTrans.localPosition;
         _initCharacterVelocity = _characterVelocity;
+
+        if (_characterSpineSA != null)
+        {
+            _characterSpineSA.AnimationState.Event += OnSpineSpecialEvent;
+        }
+
         _characterSpecial.SetActive(false);
         CharacterMoveSet(_motionType);
         
@@ -80,8 +90,14 @@ public class CharacterLocator : MonoBehaviour
 
         //移動用
         Observable.EveryUpdate()
-            .Subscribe(_ => {
-                CharacterMove();
+            .Subscribe(_ =>
+            {
+                _characterLocatorRigid.linearVelocity = Vector2.zero;
+                if (!_isSpecialActive)
+                {
+                    CharacterMove();
+                }
+                
             })
             .AddTo(this);
 
@@ -144,7 +160,7 @@ public class CharacterLocator : MonoBehaviour
                     });
 
                 //スペースボタンを監視。スペシャル起動
-                Observable.EveryUpdate()
+                Observable.EveryUpdate()               　　
                     .Where(_ => Input.GetKeyDown(KeyCode.Space))
                     .Subscribe(_ => {
                         CharacterSpecialSet();
@@ -153,6 +169,7 @@ public class CharacterLocator : MonoBehaviour
 
                 //左Ctrlを監視。スキル起動
                 Observable.EveryUpdate()
+               　　 .Where(_ => !_isSpecialActive)//スペシャル中はコントロール不可
                     .Where(_ => Input.GetKeyDown(KeyCode.LeftControl))
                     .Subscribe(_ => {
                         CharacterSkillSet();
@@ -161,6 +178,7 @@ public class CharacterLocator : MonoBehaviour
 
                 //左Shiftを監視。低速モード
                 Observable.EveryUpdate()
+               　　 .Where(_ => !_isSpecialActive)//スペシャル中はコントロール不可
                     .Where(_ => Input.GetKeyDown(KeyCode.LeftShift))
                     .Subscribe(_ => {
                         _characterVelocity *= 0.5f;
@@ -168,6 +186,7 @@ public class CharacterLocator : MonoBehaviour
                     })
                     .AddTo(this);
                 Observable.EveryUpdate()
+                　 .Where(_ => !_isSpecialActive)//スペシャル中はコントロール不可
                    .Where(_ => Input.GetKeyUp(KeyCode.LeftShift))
                    .Subscribe(_ => {
                        _characterVelocity = _initCharacterVelocity;
@@ -321,18 +340,35 @@ public class CharacterLocator : MonoBehaviour
             _characterSpecialLevel.Value = 0;
             this.gameObject.layer = 6;//無敵レイヤー
             _cutinPlayable.Play();
-            await UniTask.Delay(TimeSpan.FromSeconds(1.1f));//Completeとれないのでカットイン時間決め打ち
-            
+            await UniTask.Delay(TimeSpan.FromSeconds(0.9f));//Completeとれないのでカットイン時間決め打ち
+
             //_specialTimeの間全画面攻撃。ここにミニキャラ側のスペシャル演出いれる
-            _characterSpecial.SetActive(true);
+            CharacterAttackSetStop();//ビット攻撃をいったんストップ
+            SetSpineAnimation(_characterSpineSA, 0, "special", false, 1f);
 
             await UniTask.Delay(TimeSpan.FromSeconds(_specialTime));
             _characterSpecial.SetActive(false);
+            CharacterAttackSet(_characterAttackLevel.Value);//ビット攻撃を再開
             this.gameObject.layer = 3;//無敵解除
             _isSpecialActive = false;
 
         }
            
+    }
+    private void OnSpineSpecialEvent(TrackEntry trackEntry, Spine.Event e)//スペシャル用のイベントキー挙動
+    {
+        // イベント名で分岐
+        if (e.Data.Name == "special_pos")
+        {
+            //CharacterSpecialPosの位置にキャラを移動
+            _characterLocatorTrans.DOLocalMove(_characterSpecialPos, 0.18f).SetEase(Ease.OutCubic);
+
+        }
+        if (e.Data.Name == "special_eff")
+        {
+            //スペシャルエフェクト
+            _characterSpecial.SetActive(true);//全画面コリジョンON
+        }
     }
 
     public async UniTaskVoid CharacterSkillSet()//スキル処理
@@ -428,6 +464,15 @@ public class CharacterLocator : MonoBehaviour
                 break;
         }
     }
+    private void CharacterAttackSetStop()
+    {
+        _characterAttackObject[0].Stop();
+        _characterAttackObject[1].Stop();
+        _characterAttackObject[2].Stop();
+        _characterAttackObject[3].Stop();
+        _characterAttackObject[4].Stop();
+        CharacterAttackBitSetStop();
+    }
 
     private void CharacterAttackBitSet(int number)//キャラのビットの表示をセット
     {
@@ -446,6 +491,14 @@ public class CharacterLocator : MonoBehaviour
                  0.5f
             );
     }
+    private void CharacterAttackBitSetStop()//キャラのビットを非表示
+    {
+        foreach (TransformFadeGroup bitFadeGroup in _bitsFadeGroup)
+        {
+            bitFadeGroup._spriteAlpha.Value = 0;
+        }
+
+    }
 
     private void SetSpineAnimation(SkeletonAnimation skeletonAnimation,int trackNumber , String animationName,bool loop , float timeScale)
     {
@@ -462,6 +515,8 @@ public class CharacterLocator : MonoBehaviour
         var current = skeleton.AnimationState.GetCurrent(trackIndex);
         return current != null && current.Animation != null && current.Animation.Name == animationName;
     }
+
+   
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

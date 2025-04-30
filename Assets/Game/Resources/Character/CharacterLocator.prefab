@@ -3793,7 +3793,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -8686,7 +8686,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -13533,7 +13533,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -18380,7 +18380,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -19483,11 +19483,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameMaster: {fileID: 0}
+  _characterLocatorTrans: {fileID: 4585653750879566183}
   _characterLocatorRigid: {fileID: 8534472817016875481}
   _uICharacterGauge: {fileID: 0}
   _uICharacterHp: {fileID: 0}
   _characterSpecial: {fileID: 0}
   _characterSpineSA: {fileID: 4126322876176994361}
+  _cutinPlayable: {fileID: 0}
+  _characterSpecialTrans: {fileID: 0}
   _characterAttackObject:
   - {fileID: 6794945584050506385}
   - {fileID: 8753425308308167760}
@@ -28240,7 +28243,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -33435,7 +33438,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -48307,7 +48310,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -53241,7 +53244,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -63059,7 +63062,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -68080,7 +68083,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -77930,7 +77933,7 @@ ParticleSystem:
     radiusScale: 0.2
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -82777,7 +82780,7 @@ ParticleSystem:
     radiusScale: 0.3
     collidesWith:
       serializedVersion: 2
-      m_Bits: 128
+      m_Bits: 1152
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
