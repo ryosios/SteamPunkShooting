@@ -130,7 +130,7 @@ public class CharacterLocator : MonoBehaviour
                         if (_characterHP.Value > 0 && _characterHP.Value <= 10)
                         {
                             GetDamagePoint(damage);
-
+                            SetSpineAnimation(_characterSpineSA,3, "damaged_track3", false,1f);
                         }
                     })
                     .AddTo(this);
@@ -164,7 +164,7 @@ public class CharacterLocator : MonoBehaviour
                     .Where(_ => Input.GetKeyDown(KeyCode.LeftShift))
                     .Subscribe(_ => {
                         _characterVelocity *= 0.5f;
-                        _characterAnimationTimeScale *= 0.5f;
+                        _characterAnimationTimeScale *= 0.7f;
                     })
                     .AddTo(this);
                 Observable.EveryUpdate()
