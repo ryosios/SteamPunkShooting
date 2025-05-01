@@ -25,6 +25,7 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private SkeletonAnimation _characterSpineSA;
     [SerializeField] private PlayableDirector _cutinPlayable;
     [SerializeField] private Transform _characterSpecialPosTrans;
+    [SerializeField] private ParticleSystem _characterSpecialEffectParticle;
 
     [Header("AttackType")]
     [SerializeField] private ParticleSystem[] _characterAttackObject;
@@ -340,11 +341,12 @@ public class CharacterLocator : MonoBehaviour
             _characterSpecialLevel.Value = 0;
             this.gameObject.layer = 6;//無敵レイヤー
             _cutinPlayable.Play();
+            CharacterAttackSetStop();//ビット攻撃をいったんストップ
             await UniTask.Delay(TimeSpan.FromSeconds(0.9f));//Completeとれないのでカットイン時間決め打ち
 
-            //_specialTimeの間全画面攻撃。ここにミニキャラ側のスペシャル演出いれる
-            CharacterAttackSetStop();//ビット攻撃をいったんストップ
-            SetSpineAnimation(_characterSpineSA, 0, "special", false, 1f);
+            //_specialTimeの間全画面攻撃。ここにミニキャラ側のスペシャル演出いれる 
+            SetSpineAnimation(_characterSpineSA, 0, "special", false, 0.9f);
+            Debug.Log("スペシャル！");
 
             await UniTask.Delay(TimeSpan.FromSeconds(_specialTime));
             _characterSpecial.SetActive(false);
@@ -368,6 +370,8 @@ public class CharacterLocator : MonoBehaviour
         {
             //スペシャルエフェクト
             _characterSpecial.SetActive(true);//全画面コリジョンON
+            _characterSpecialEffectParticle.Play();
+            
         }
     }
 
