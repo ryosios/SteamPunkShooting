@@ -1,0 +1,10 @@
+enemy_1.png
+size:512,512
+filter:Linear,Linear
+pma:true
+enemy_1
+bounds:262,2,308,84
+rotate:90
+enemy_2
+bounds:2,23,258,287
+offsets:0,7,259,294
