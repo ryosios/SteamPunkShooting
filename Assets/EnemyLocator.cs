@@ -9,6 +9,8 @@ public class EnemyLocator : MonoBehaviour
 
     [SerializeField] private Transform _enemyBodyRect;
     [SerializeField] private ParticleSystem _enemyAttackParticle;
+    [SerializeField] private ParticleSystem _effectBombParticle;
+    [SerializeField] private ParticleSystem _effectShockParticle;
 
     private CircleCollider2D _thisCircleCollider;
 
@@ -34,6 +36,7 @@ public class EnemyLocator : MonoBehaviour
             Subscribe(damage =>
             {
                 _enemyHp.Value -= damage;
+                _effectShockParticle.Play();
 
             }).AddTo(this);
 
@@ -47,6 +50,7 @@ public class EnemyLocator : MonoBehaviour
                      _thisCircleCollider.enabled = false;
                      _enemyBodyRect.gameObject.SetActive(false);
                      _enemyAttackParticle.Stop();
+                     _effectBombParticle.Play();
                  }
 
              }).AddTo(this);
