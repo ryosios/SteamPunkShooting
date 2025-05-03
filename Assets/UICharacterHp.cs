@@ -14,6 +14,8 @@ public class UICharacterHp : MonoBehaviour
 
     private Image[] _hPStarsUpperImage;
     private ParticleSystem[] _hPStarsUpperParticle;
+
+    private int _previousHP;//1F前のHP
     private void Awake()
     {
         _hPStarsUpperImage = new Image[_hPStarsUpperRect.Length];
@@ -25,6 +27,7 @@ public class UICharacterHp : MonoBehaviour
             _hPStarsUpperParticle[i] = _hPStarsUpperRect[i].GetComponentInChildren<ParticleSystem>();
         }
         //初期HP設定
+        _previousHP = _characterLocator._characterHP.Value;
         SetHpValue(_characterLocator._characterHP.Value);
     }
 
@@ -40,11 +43,16 @@ public class UICharacterHp : MonoBehaviour
             //_hPStarsUpperRect[i].gameObject.SetActive(true);
             _hPStarsUpperImage[i].color = new Color(1f, 1f, 1f, 1f);           
         }
-        if(nowHp >= 0 && nowHp < 10)
+
+        if(_previousHP > nowHp)
         {
-            _hPStarsUpperParticle[nowHp].Play();
+            if (nowHp >= 0 && nowHp < 10)
+            {
+                _hPStarsUpperParticle[nowHp].Play();
+            }
         }
-        
+          
+        _previousHP = nowHp;
     }
 
 }

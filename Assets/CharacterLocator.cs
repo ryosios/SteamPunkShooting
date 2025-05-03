@@ -40,6 +40,7 @@ public class CharacterLocator : MonoBehaviour
     //HP管理用
     public ReactiveProperty<int> _characterHP { get; set; } = new ReactiveProperty<int>(5);
     public Subject<int> _getDamageSubject = new Subject<int>();//ダメージ受けたとき
+    private int _previousHP;//１フレ前のHP用
 
     //スペシャル用
     public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //スペシャルレベル
@@ -47,7 +48,7 @@ public class CharacterLocator : MonoBehaviour
     private float _specialTime = 2f; //スペシャルの効果時間
     private bool _isSpecialActive = false;
     private Vector3 _characterSpecialPos;
-    private float _mutekiTime = 1f;
+    private float _mutekiTime = 2f;
 
     //スキル。レベルがあがるとアタックが強化される
     public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//アタックレベル
@@ -78,6 +79,7 @@ public class CharacterLocator : MonoBehaviour
 
     private void Awake()
     {
+        _previousHP = _characterHP.Value;
         _characterSpecialPos = _characterSpecialPosTrans.localPosition;
         _initCharacterVelocity = _characterVelocity;
 
@@ -111,17 +113,29 @@ public class CharacterLocator : MonoBehaviour
             .Subscribe(hp =>
             {
                 Debug.Log("HP: {hp}");
+                
 
                 _uICharacterHp.SetHpValue(hp); //UIのHPにセット
-                if (_characterSpecialLevel.Value >= 0 && _characterSpecialLevel.Value < 6)
+
+                if (_previousHP > hp)//HPが下がった時
                 {
-                    _characterSpecialLevel.Value += 1;//ダメージうけたらスペシャルレベルがあがる
+                    if (_characterSpecialLevel.Value >= 0 && _characterSpecialLevel.Value < 6)
+                    {
+                        _characterSpecialLevel.Value += 1;//ダメージうけたらスペシャルレベルがあがる
+                    }
                 }
+                if (_previousHP < hp)//HPが上がった時
+                {   
+                        Debug.Log("HPがあがった");   
+                }
+
 
                 if (hp <= 0)
                 {
                     Debug.Log("ゲームオーバー時");
                 }
+
+                _previousHP = hp;
             })
             .AddTo(this);
 
@@ -331,8 +345,7 @@ public class CharacterLocator : MonoBehaviour
         await UniTask.Delay(TimeSpan.FromSeconds(_mutekiTime));
         this.gameObject.layer = 3;
     }
-  
-
+   
     public async UniTaskVoid CharacterSpecialSet()//スペシャルの処理
     {
 
@@ -535,6 +548,21 @@ public class CharacterLocator : MonoBehaviour
             }
         }
 
+        if (collision.gameObject.tag == "HPItem")//敵との直接接触用
+        {
+            if (_characterHP.Value > 0 && _characterHP.Value <= 10)
+            {
+                GetHPItemPoint();
+                Destroy(collision.gameObject);
+                Debug.Log("HPアイテム取得");
+            }
+        }
+
+    }
+
+    private void GetHPItemPoint()
+    {    
+        _characterHP.Value += 1;
     }
 
 

@@ -8,6 +8,8 @@ TagManager:
   - CharacterSpecial
   - Enemy
   - UIPoint
+  - EnemyBody
+  - HPItem
   layers:
   - Default
   - TransparentFX
@@ -20,8 +22,8 @@ TagManager:
   - BackGround
   - CharacterSpecial
   - Wall
-  - 
-  - 
+  - EnemyBody
+  - HPItem
   - 
   - 
   - 
