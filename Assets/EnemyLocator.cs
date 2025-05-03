@@ -12,11 +12,15 @@ public class EnemyLocator : MonoBehaviour
     [SerializeField] private ParticleSystem _effectBombParticle;
     [SerializeField] private ParticleSystem _effectShockParticle;
 
+
     private CircleCollider2D _thisCircleCollider;
 
     //HP
     [SerializeField] private int _Hp = 2;
     private ReactiveProperty<int> _enemyHp;
+
+    //ポイント
+    [SerializeField] private int _point = 100;
 
     //生存フラグ
     public bool _isAlive { get; set; } = true;
@@ -49,6 +53,7 @@ public class EnemyLocator : MonoBehaviour
                      _isAlive = false;
                      _thisCircleCollider.enabled = false;
                      _enemyBodyRect.gameObject.SetActive(false);
+                     UIPoint._instance.AddPoint(_point);
                      _enemyAttackParticle.Stop();
                      _effectBombParticle.Play();
                  }

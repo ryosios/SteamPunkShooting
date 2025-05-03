@@ -7,6 +7,7 @@ TagManager:
   - UIHp
   - CharacterSpecial
   - Enemy
+  - UIPoint
   layers:
   - Default
   - TransparentFX
