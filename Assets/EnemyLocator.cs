@@ -28,6 +28,7 @@ public class EnemyLocator : MonoBehaviour
     //エネミーがダメージを受けるサブジェクト
     public Subject<int> _enemyDamagedSubject = new Subject<int>();
 
+   
 
     // Start is called before the first frame update
     void Awake()
@@ -62,6 +63,6 @@ public class EnemyLocator : MonoBehaviour
 
 
     }
-
    
+
 }

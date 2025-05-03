@@ -4911,6 +4911,7 @@ MonoBehaviour:
   _effectBombParticle: {fileID: 3662728705175037207}
   _effectShockParticle: {fileID: 1811057921622699972}
   _Hp: 2
+  _point: 100
 --- !u!58 &3943265937954768700
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -4946,7 +4947,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.31
 --- !u!1 &3978550275196703629
 GameObject:
   m_ObjectHideFlags: 0
@@ -4959,7 +4960,7 @@ GameObject:
   - component: {fileID: 8762772666282841685}
   - component: {fileID: 6654022571799794783}
   - component: {fileID: 7082652453995509955}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Spine GameObject (enemy_1) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5087,9 +5088,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3795945193569607696}
   - component: {fileID: 2946095904209344747}
-  m_Layer: 7
+  - component: {fileID: 5723030507502426442}
+  m_Layer: 11
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: EnemyBody
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5166,6 +5168,42 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &5723030507502426442
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7520508359020847258}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.3
 --- !u!1 &8190218349265361380
 GameObject:
   m_ObjectHideFlags: 0

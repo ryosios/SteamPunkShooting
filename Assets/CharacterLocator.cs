@@ -47,6 +47,7 @@ public class CharacterLocator : MonoBehaviour
     private float _specialTime = 2f; //スペシャルの効果時間
     private bool _isSpecialActive = false;
     private Vector3 _characterSpecialPos;
+    private float _mutekiTime = 1f;
 
     //スキル。レベルがあがるとアタックが強化される
     public ReactiveProperty<int> _characterAttackLevel { get; set; } = new ReactiveProperty<int>(0);//アタックレベル
@@ -56,9 +57,10 @@ public class CharacterLocator : MonoBehaviour
     //移動用
     private Vector3 _previousPos;
 
+    //敵とキャラが接触で受けるダメージ（固定）
+    private int _enemyTouchDamage = 1;
 
 
-    private float _mutekiTime = 1f;
 
     public enum MotionType
     {
@@ -140,7 +142,7 @@ public class CharacterLocator : MonoBehaviour
                     })
                     .AddTo(this);
 
-                //被ダメ時
+                //被ダメ時（敵の弾オンリー。敵との直接接触はOnTriggerEnter2D内で）
                 _getDamageSubject
                     .Subscribe(damage =>
                     {
@@ -323,9 +325,9 @@ public class CharacterLocator : MonoBehaviour
     }
 
     private async void GetDamagePoint(int damage)
-    {
-        _characterHP.Value -= damage;
+    {      
         this.gameObject.layer = 6;
+        _characterHP.Value -= damage;
         await UniTask.Delay(TimeSpan.FromSeconds(_mutekiTime));
         this.gameObject.layer = 3;
     }
@@ -520,10 +522,20 @@ public class CharacterLocator : MonoBehaviour
         return current != null && current.Animation != null && current.Animation.Name == animationName;
     }
 
-   
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log($"{collision.gameObject.name} とぶつかった！");
+        
+        if (collision.gameObject.tag == "EnemyBody")//敵との直接接触用
+        {
+            if (_characterHP.Value > 0 && _characterHP.Value <= 10)
+            {
+                GetDamagePoint(_enemyTouchDamage);
+                SetSpineAnimation(_characterSpineSA, 3, "damaged_track3", false, 1f);
+                Debug.Log("エネミーに接触");
+            }
+        }
+
     }
+
+
 }
