@@ -39,6 +39,7 @@ public class ItemHolder : MonoBehaviour
             .SkipUntil(_gameMaster._startChapter1Subject)//チャプター1が開始されるまでは購読無視する
             .Subscribe(_ =>
             {
+                Debug.Log("HPアイテム出現1");
                 _setHPItemSubject.OnNext(Unit.Default);
             })
             .AddTo(this);
@@ -49,7 +50,7 @@ public class ItemHolder : MonoBehaviour
             .DistinctUntilChanged()
              .Subscribe(nowPoint =>
              {
-                 Debug.Log("HPアイテム出現");
+                 Debug.Log("HPアイテム出現2");
                  int nowPointRemainder = nowPoint % _hpItemPointInterval;
 
                  if (nowPointRemainder == 0)

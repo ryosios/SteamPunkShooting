@@ -10,6 +10,12 @@ public class MagnetItemRigidbody : MonoBehaviour
     private Transform player;
     private Rigidbody2D rb;
 
+    //存在有効範囲
+    private float _minPosX = -5.4f;
+    private float _maxPosX = 5.4f;
+    private float _minPosY = -8f;    
+    private float _maxPosY = 5.4f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -41,6 +47,16 @@ public class MagnetItemRigidbody : MonoBehaviour
             {
                 rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
             }
+        }
+
+       
+        HPItemCameraOutDestroy();
+    }
+    private void HPItemCameraOutDestroy()
+    {
+        if(transform.localPosition.x < _minPosX || transform.localPosition.x > _maxPosX || transform.localPosition.y < _minPosY || transform.localPosition.y > _maxPosY)
+        {
+            Destroy(gameObject);
         }
     }
 }
