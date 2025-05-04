@@ -10,6 +10,8 @@ TagManager:
   - UIPoint
   - EnemyBody
   - HPItem
+  - GameMaster
+  - AttackParticle
   layers:
   - Default
   - TransparentFX

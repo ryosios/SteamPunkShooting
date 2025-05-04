@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParticleFollowObject : MonoBehaviour
+public class ParticleFollowObject : EnemyLocator
 {
-    public Transform _target;
+    //EnemyLocator継承
+    private Transform _target;
     public float _speed;
     public float _maxAngle = 45f;
     int particleCount;
@@ -14,6 +15,7 @@ public class ParticleFollowObject : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _target = _characterLocator.transform;
         _particleSystem = GetComponent<ParticleSystem>();
     }
 

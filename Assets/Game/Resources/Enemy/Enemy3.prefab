@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: 7143009999362662918}
   - component: {fileID: 3843785415283315880}
   - component: {fileID: 2705915879871241602}
+  - component: {fileID: 7021976973456598525}
   m_Layer: 7
   m_Name: Particle System
   m_TagString: Untagged
@@ -244,13 +245,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8190218349265361380}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.50114757, y: -0.4988498, z: 0.4988498, w: 0.50114757}
+  m_LocalRotation: {x: -0, y: -0, z: 0.7182359, w: 0.69579977}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.36000004, y: 0.36, z: 0.36000004}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1234488711111214917}
-  m_LocalEulerAnglesHint: {x: -0.263, y: -90, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 91.818}
 --- !u!198 &7143009999362662918
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -268,7 +269,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -387,7 +388,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.28
+      scalar: 17.33
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -882,14 +883,14 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 6
     enabled: 1
-    type: 10
+    type: 4
     angle: 0
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
-    m_Rotation: {x: 90, y: 0, z: 0}
+    m_Rotation: {x: 0, y: 90, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
@@ -5008,7 +5009,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
+  - {fileID: 2100000, guid: e7ee4e3d9acc018468160daa5470c3dc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5074,6 +5075,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyLocator: {fileID: 300814822025787320}
+--- !u!114 &7021976973456598525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8190218349265361380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56a21061183aaf649ae2cd6d50d29a6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyBodyRect: {fileID: 0}
+  _enemyAttackParticle: {fileID: 0}
+  _effectBombParticle: {fileID: 0}
+  _effectShockParticle: {fileID: 0}
+  _Hp: 2
+  _point: 100
 --- !u!1 &8680428519193946778
 GameObject:
   m_ObjectHideFlags: 0
@@ -5087,7 +5106,7 @@ GameObject:
   - component: {fileID: 201835234153593859}
   m_Layer: 7
   m_Name: AttackParticle
-  m_TagString: Untagged
+  m_TagString: AttackParticle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5125,7 +5144,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:

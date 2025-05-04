@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
-using DG.Tweening;
 
 public class Chapter1 : ChapterBase
 {
@@ -12,9 +13,10 @@ public class Chapter1 : ChapterBase
     [SerializeField] private GameMaster _gameMaster;
     [SerializeField] private Transform[] _enemys;
     private EnemyLocator[] _enemyLocators;
+    private ParticleSystem[] _attackParticles;
 
     private List<EnemyLocator> _enemyLocatorsAlliveList = new List<EnemyLocator>(); //生きてる扱いのEnemyLocatorをいれておくリスト
-    public override ReactiveProperty<int> _selectNumber { get; set; } = new ReactiveProperty<int>(0);
+    public override ReactiveProperty<int> _selectNumber { get; set; } = new ReactiveProperty<int>(-1);
 
     [HideInInspector] public DG.Tweening.Sequence _sequence;
 
@@ -39,7 +41,14 @@ public class Chapter1 : ChapterBase
 
         _initEnemyPos = _enemys[0].localPosition;
 
-        _selectNumber.Subscribe(selectNumber => SetChapter(selectNumber)).AddTo(this);
+        _attackParticles = new ParticleSystem[_enemys.Length];
+        for (int i = 0; i < _enemys.Length; i++)
+        {
+            _attackParticles[i] = _enemys[i].transform.Find("AttackParticle").GetComponent<ParticleSystem>();
+            _attackParticles[i].Stop();
+        }
+
+        _selectNumber.Subscribe(selectNumber => SetChapter(selectNumber)).AddTo(this);//_selectNumberが変更されたらその数に応じたChapterが再生される
     }
 
     public override void SetChapter(int selectNumber)
@@ -47,9 +56,16 @@ public class Chapter1 : ChapterBase
         
         switch (selectNumber)
         {
-            case 0:
+            case 0://待機時間用
+                WaitStartAsync(1f).Forget(); 
                 break;
-            case 1:
+            case 1://動作開始
+                for (int i = 0; i < _attackParticles.Length; i++)
+                {
+                    _attackParticles[i].Play();//攻撃パーティクルを開始
+                  
+                }
+
                 _sequence = DOTween.Sequence();
                 for (int i = 0; i < _enemys.Length; i++)
                 {
@@ -71,13 +87,12 @@ public class Chapter1 : ChapterBase
                 _sequence.OnUpdate(() =>
                 {
                     //敵が全員負けリストに入ったら強制次チャプターへ
-                    NextChapterCompleteEnemy();
+                    NextChapterCompleteEnemy().Forget();
                 });
                 _sequence.OnComplete(() =>
-                {
-                    Debug.Log("koko");
-                    
+                { 
                     _selectNumber.Value += 1;
+
                 });
                 _sequence.Play();
                 break;
@@ -103,11 +118,11 @@ public class Chapter1 : ChapterBase
                 }
                 _sequence.OnUpdate(() =>
                 {
-                    NextChapterCompleteEnemy();
+                    NextChapterCompleteEnemy().Forget();
                 });
                 _sequence.OnComplete(() =>
                 {
-                    NextChapter();
+                    NextChapter().Forget();
                 });
                 _sequence.Play();
                 break;
@@ -117,31 +132,49 @@ public class Chapter1 : ChapterBase
     }
 
 
-    private void NextChapterCompleteEnemy()
+    private async UniTaskVoid NextChapterCompleteEnemy()
     {
-        foreach (var _enemy in _enemyLocatorsAlliveList)
+       
+        for (int i = _enemyLocatorsAlliveList.Count - 1; i >= 0; i--)
         {
-            if (!_enemy._isAlive)
+            if (!_enemyLocatorsAlliveList[i]._isAlive)
             {
-                _enemyLocatorsAlliveList.Remove(_enemy);
+                _enemyLocatorsAlliveList.Remove(_enemyLocatorsAlliveList[i]);
             }
         }
 
         if (_enemyLocatorsAlliveList.Count == 0)
         {
             //敵全滅したら次チャプター
-            Debug.Log("kokokamo");
-            NextChapter();
-            _enemyLocatorsAlliveList.Clear();
+            
+            
+            NextChapter().Forget();
+
         }
 
     }
 
-    private void NextChapter()
+    private async UniTaskVoid NextChapter()
     {
         _selectNumber.Value += 1;
         _gameMaster._chapterNumber.Value += 1;
+        for (int i = 0; i < _attackParticles.Length; i++)
+        {
+            _attackParticles[i].Stop();//攻撃パーティクルを終了
+        }
         _sequence.Kill();
+        await UniTask.Delay(System.TimeSpan.FromSeconds(10f));
+        _enemyLocatorsAlliveList.Clear();
+        Destroy(this.gameObject);
+
     }
-   
+
+    private async UniTaskVoid WaitStartAsync(float waitSecond)
+    {
+        
+        await UniTask.Delay(System.TimeSpan.FromSeconds(waitSecond));  // 1秒待つ
+        _selectNumber.Value += 1;
+        Debug.Log("selectNumber1開始");
+    }
+
 }

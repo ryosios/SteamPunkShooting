@@ -43,6 +43,9 @@ public class GameMaster : MonoBehaviour
                
 
 #endif
+
+
+
         _startButton.OnClickAsObservable()
                .Subscribe(_ =>
                {
@@ -88,8 +91,9 @@ public class GameMaster : MonoBehaviour
                                         break;
                                     case 1:
                                         Debug.Log("1_chapter1");
+                                        _chapters[1].gameObject.SetActive(true);
                                         _startChapter1Subject.OnNext(Unit.Default);//ステージごとのChapter1に必ず必要！
-                                        _chapters[1]._selectNumber.Value = 1;
+                                        _chapters[1]._selectNumber.Value = 0;//チャプター1のセレクトナンバー0を設定。待機時間ののち向こうで1になる
                                         //ChapterNumberを0にセットする処理が必要
                                         break;
                                     case 2:
