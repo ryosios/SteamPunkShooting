@@ -25,6 +25,10 @@ public class MagnetItemRigidbody : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, player.position);
 
+        if (distance > magnetRange)
+        {
+            rb.linearVelocity = new Vector2 (0f, 1f*maxSpeed);
+        }
         if (distance < magnetRange)
         {
             Vector2 direction = (player.position - transform.position).normalized;

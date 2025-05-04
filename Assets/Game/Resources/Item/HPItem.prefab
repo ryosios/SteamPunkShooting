@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 577042c4ac1055f4ea9cc6a58c0368b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magnetRange: 1.5
+  magnetRange: 1
   attractionForce: 10
-  maxSpeed: 5
+  maxSpeed: 3
 --- !u!50 &5902252476009724370
 Rigidbody2D:
   serializedVersion: 5

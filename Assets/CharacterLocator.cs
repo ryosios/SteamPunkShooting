@@ -141,7 +141,7 @@ public class CharacterLocator : MonoBehaviour
 
 
         //キャラクターの挙動開始タイミングを監視
-        _gameMaster._playCharacterSubject
+        _gameMaster._startChapter1Subject
             .Subscribe(_ =>
             {
                 //スペシャル
