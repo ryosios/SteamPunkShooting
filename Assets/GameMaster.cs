@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class GameMaster : MonoBehaviour
 {
     [SerializeField] private BackGroundMaker _backGroundMaker;
     [SerializeField] private Animator _titleImageAnimator;
     [SerializeField] private RectTransform[] _titleTweenHaguruma;
-
+    [SerializeField] private Transform _stageTrans;
     //キャラクターの挙動開始フラグ
     public Subject<UniRx.Unit> _startChapter1Subject = new Subject<UniRx.Unit>();//挙動開始。chapter1開始時。アタック撃つフラグ
 
@@ -91,8 +92,10 @@ public class GameMaster : MonoBehaviour
                                         break;
                                     case 1:
                                         Debug.Log("1_chapter1");
-                                        _chapters[1].gameObject.SetActive(true);
-                                        _startChapter1Subject.OnNext(Unit.Default);//ステージごとのChapter1に必ず必要！
+
+                                        GameObject chapter = (GameObject) Resources.Load("Chapter/Chapter1");
+                                        _chapters[1] = Instantiate(chapter, _stageTrans).GetComponent<ChapterBase>();
+                                        _startChapter1Subject.OnNext(UniRx.Unit.Default);//ステージごとのChapter1に必ず必要！
                                         _chapters[1]._selectNumber.Value = 0;//チャプター1のセレクトナンバー0を設定。待機時間ののち向こうで1になる
                                         //ChapterNumberを0にセットする処理が必要
                                         break;

@@ -10,7 +10,7 @@ public class Chapter1 : ChapterBase
 {
     // Start is called before the first frame update
 
-    [SerializeField] private GameMaster _gameMaster;
+    private GameMaster _gameMaster;
     [SerializeField] private Transform[] _enemys;
     private EnemyLocator[] _enemyLocators;
     private ParticleSystem[] _attackParticles;
@@ -28,6 +28,7 @@ public class Chapter1 : ChapterBase
 
     void Awake()
     {
+        _gameMaster = GameObject.FindWithTag("GameMaster").GetComponent<GameMaster>();
         _enemyLocators = new EnemyLocator[_enemys.Length];
         for(int i = 0; i< _enemys.Length; i++)
         {
