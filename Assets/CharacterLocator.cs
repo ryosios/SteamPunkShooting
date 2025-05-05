@@ -41,6 +41,8 @@ public class CharacterLocator : MonoBehaviour
     public ReactiveProperty<int> _characterHP { get; set; } = new ReactiveProperty<int>(5);
     public Subject<int> _getDamageSubject = new Subject<int>();//ダメージ受けたとき
     private int _previousHP;//１フレ前のHP用
+    private const int _maxHP = 10;
+    private const int _minHP = 0;
 
     //スペシャル用
     public ReactiveProperty<int> _characterSpecialLevel { get; set; } = new ReactiveProperty<int>(0); //スペシャルレベル
@@ -59,8 +61,16 @@ public class CharacterLocator : MonoBehaviour
     private Vector3 _previousPos;
 
     //敵とキャラが接触で受けるダメージ（固定）
-    private int _enemyTouchDamage = 1;
+    private const int _enemyTouchDamage = 1;
 
+    //自傷で受けるダメージ
+    private const int _skillSetDamage = 1;
+
+    //アイテムとキャラが接触で受ける回復量
+    private const int _itemTouchPoint = 1;
+
+    //被ダメージ時のエフェクトの時間
+    private const float _damageEffectTime = 1.0f;
 
 
     public enum MotionType
@@ -160,11 +170,8 @@ public class CharacterLocator : MonoBehaviour
                 _getDamageSubject
                     .Subscribe(damage =>
                     {
-                        if (_characterHP.Value > 0 && _characterHP.Value <= 10)
-                        {
-                            GetDamagePoint(damage);
-                            SetSpineAnimation(_characterSpineSA,3, "damaged_track3", false,1f);
-                        }
+                        GetDamagePoint(damage);
+                        SetSpineAnimation(_characterSpineSA,3, "damaged_track3", false, _damageEffectTime);
                     })
                     .AddTo(this);
 
@@ -341,8 +348,8 @@ public class CharacterLocator : MonoBehaviour
     private async void GetDamagePoint(int damage)
     {      
         this.gameObject.layer = 6;
-        _characterHP.Value -= damage;
-        await UniTask.Delay(TimeSpan.FromSeconds(_mutekiTime));
+        _characterHP.Value = Mathf.Clamp(_characterHP.Value - damage, _minHP, _maxHP);
+        await UniTask.Delay(TimeSpan.FromSeconds(_damageEffectTime));
         this.gameObject.layer = 3;
     }
    
@@ -393,7 +400,7 @@ public class CharacterLocator : MonoBehaviour
     public async UniTaskVoid CharacterSkillSet()//スキル処理
     {
         //HP自傷
-        _characterHP.Value -= 1;
+        _characterHP.Value = Mathf.Clamp(_characterHP.Value - _skillSetDamage, _minHP, _maxHP);
 
         //Attackレベルをあげる
         if(_characterAttackLevel.Value < 4)
@@ -532,38 +539,44 @@ public class CharacterLocator : MonoBehaviour
     bool IsPlayingAnimation(SkeletonAnimation skeleton, string animationName, int trackIndex = 0)
     {
         var current = skeleton.AnimationState.GetCurrent(trackIndex);
-        return current != null && current.Animation != null && current.Animation.Name == animationName;
+        if (current is null || current.Animation is null)
+        {
+            return false;
+        }
+
+        // アニメーション名が異なれば未再生（または別アニメ）
+        if (current.Animation.Name != animationName)
+        {
+            return false;
+        }
+        // ループ再生なら常に再生中
+        if (current.Loop)
+        {
+            return true;
+        }
+        // 非ループ再生なら、再生時間がアニメーション長未満なら再生中とみなす
+        return current.TrackTime < current.Animation.Duration;
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        
         if (collision.gameObject.tag == "EnemyBody")//敵との直接接触用
         {
-            if (_characterHP.Value > 0 && _characterHP.Value <= 10)
-            {
-                GetDamagePoint(_enemyTouchDamage);
-                SetSpineAnimation(_characterSpineSA, 3, "damaged_track3", false, 1f);
-                Debug.Log("エネミーに接触");
-            }
+            GetDamagePoint(_enemyTouchDamage);
+            SetSpineAnimation(_characterSpineSA, 3, "damaged_track3", false, _damageEffectTime);
+            Debug.Log("エネミーに接触");
         }
 
         if (collision.gameObject.tag == "HPItem")//敵との直接接触用
         {
-            if (_characterHP.Value > 0 && _characterHP.Value <= 10)
-            {
-                GetHPItemPoint();
-                Destroy(collision.gameObject);
-                Debug.Log("HPアイテム取得");
-            }
+            GetHPItemPoint(_itemTouchPoint);
+            Destroy(collision.gameObject);
+            Debug.Log("HPアイテム取得");
         }
-
     }
 
-    private void GetHPItemPoint()
-    {    
-        _characterHP.Value += 1;
+    private void GetHPItemPoint(int point)
+    {
+        _characterHP.Value = Mathf.Clamp(_characterHP.Value + point, _minHP, _maxHP);
     }
-
-
 }
