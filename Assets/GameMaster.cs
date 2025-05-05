@@ -28,7 +28,7 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private int _testChapterNumber;
 
     //Chapter
-    [SerializeField] private ChapterBase[] _chapters;
+    private ChapterBase _chapter;
 
 
 
@@ -39,12 +39,8 @@ public class GameMaster : MonoBehaviour
         TestButtonS.gameObject.SetActive(false);
         TestButtonC.gameObject.SetActive(false);
         TestButtonN.gameObject.SetActive(false);
-     
-              
-               
 
 #endif
-
 
 
         _startButton.OnClickAsObservable()
@@ -94,9 +90,9 @@ public class GameMaster : MonoBehaviour
                                         Debug.Log("1_chapter1");
 
                                         GameObject chapter = (GameObject) Resources.Load("Chapter/Chapter1");
-                                        _chapters[1] = Instantiate(chapter, _stageTrans).GetComponent<ChapterBase>();
+                                        _chapter = Instantiate(chapter, _stageTrans).GetComponent<ChapterBase>();
                                         _startChapter1Subject.OnNext(UniRx.Unit.Default);//ステージごとのChapter1に必ず必要！
-                                        _chapters[1]._selectNumber.Value = 0;//チャプター1のセレクトナンバー0を設定。待機時間ののち向こうで1になる
+                                        _chapter._selectNumber.Value = 0;//チャプター1のセレクトナンバー0を設定。待機時間ののち向こうで1になる
                                         //ChapterNumberを0にセットする処理が必要
                                         break;
                                     case 2:
