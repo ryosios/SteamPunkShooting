@@ -77,6 +77,7 @@ public class CharacterLocator : MonoBehaviour
 
     private CancellationToken _destroyToken;
 
+   
     public enum MotionType
     {
         Default,
@@ -111,6 +112,7 @@ public class CharacterLocator : MonoBehaviour
 
         //移動用
         Observable.EveryUpdate()
+            .Where(_ => _gameMaster._isStagePlay == true)
             .Subscribe(_ =>
             {
                 _characterLocatorRigid.linearVelocity = Vector2.zero;
@@ -167,7 +169,6 @@ public class CharacterLocator : MonoBehaviour
                     .Skip(1)//最初の1回目が自動再生されるのを回避
                     .Subscribe(specialLevel =>
                     {
-
                         _uICharacterGauge.SpecialGaugeValueSet(specialLevel);
 
                     })
@@ -603,7 +604,7 @@ public class CharacterLocator : MonoBehaviour
 
     public void CharacterGameoverAnimation()
     {
-        SetSpineAnimation(characterSpineSA, 1, "gameover", false, 1);
+        SetSpineAnimation(characterSpineSA, 0, "gameover", false, 1);
         _characterGameoverEffectParticle.Play();
     }
 }

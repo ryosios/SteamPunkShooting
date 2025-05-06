@@ -10,14 +10,14 @@ public class ResultMaster : MonoBehaviour
 
         if (_loadData != null)
         {
-            Debug.Log($"ステージとポイント: {_loadData._stage1AndPoint},現在のステージ: {_loadData._nowStage}, クリアしたかどうかのフラグ: {_loadData._isStageCleared}");
+            Debug.Log($"ステージとポイント: {_loadData._resultPoint},現在のステージ: {_loadData._nowStage}, クリアしたかどうかのフラグ: {_loadData._isStageCleared}");
         }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         //スコアを表示
-        _uIResult.SetPoint(_loadData._stage1AndPoint);
+        _uIResult.SetPoint(_loadData._resultPoint);
     }
 
     // Update is called once per frame

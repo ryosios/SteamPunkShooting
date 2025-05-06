@@ -46,6 +46,7 @@ public class GameMaster : MonoBehaviour
     //並べ替え用
     private List<int> _sortPointList = new List<int>(5);
 
+    public bool _isStagePlay { get; set; } = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -61,6 +62,7 @@ public class GameMaster : MonoBehaviour
                 .Subscribe(_ =>
                 {
                     //ゲームオーバー時
+                    _isStagePlay = false;
                     Debug.Log("ゲームオーバー");
                     HandleGameOverAsync();
                     SaveGame(_stageNumber.Value, false);
@@ -70,6 +72,7 @@ public class GameMaster : MonoBehaviour
                .Subscribe(_ =>
                {
                    //ネクストステージ時
+                   _isStagePlay = false;
                    Debug.Log("ネクストステージ");
                    HandleNextGameAsync();
                    SaveGame(_stageNumber.Value, true);
@@ -131,7 +134,7 @@ public class GameMaster : MonoBehaviour
                                 {
                                     case 0:
                                         Debug.Log("0_chapter0");
-                                        
+                                        _isStagePlay = true;
                                         break;
                                     case 1:
                                         Debug.Log("0_chapter1");
@@ -202,9 +205,9 @@ public class GameMaster : MonoBehaviour
         //ネクストステージのときの処理
         _backGroundMaker.SetBgSpeed(0f);
         //_characterLocator.CharacterGameoverAnimation();
-        await UniTask.Delay(TimeSpan.FromSeconds(3f)); // 3秒待つ
+        //await UniTask.Delay(TimeSpan.FromSeconds(3f)); // 3秒待つ
 
-        SceneManager.LoadScene("Result");
+       // SceneManager.LoadScene("Result");
     }
 
     private void SaveGame(int nowStage, bool isCleared)
@@ -214,14 +217,15 @@ public class GameMaster : MonoBehaviour
 
         if (loaded == null)
         {
-            Debug.Log("セーブデータが見つかりませんでした");
+            //セーブファイルがなかったら全部0いれて作成
             for(int i = 0; i<_sortPointList.Count; i++)
             {
                 _sortPointList[i] = 0;
             }
-            SaveData newData = new SaveData
+            SaveData newData = new SaveData //セーブデータまとめたクラス
             {
-                _stage1AndPoint = _sortPointList,
+                _resultPoint = _sortPointList,
+                _finalPoint = 0,
                 _nowStage = 0,
                 _isStageCleared = false
             };
@@ -231,43 +235,49 @@ public class GameMaster : MonoBehaviour
 
         if (loaded != null)
         {
-            Debug.Log($"ステージとポイント: {loaded._stage1AndPoint},現在のステージ: {loaded._nowStage}, クリアしたかどうかのフラグ: {loaded._isStageCleared}");
+            Debug.Log($"ステージとポイント: {loaded._resultPoint},現在のステージ: {loaded._nowStage}, クリアしたかどうかのフラグ: {loaded._isStageCleared}");
             //スコアデータに新規データを交えて５つに並べ替え。
-            foreach (var stage1AndPoint in loaded._stage1AndPoint)
+            foreach (var resultPoint in loaded._resultPoint)
             {
-                _sortPointList.Add(stage1AndPoint);
+                //ソート用のリストに保存
+                _sortPointList.Add(resultPoint);
             }
-            _sortPointList.Add(UIPoint._instance._nowPoint.Value);
-            // 降順に並べて、先頭5個を抽出
+            
+            //現在のステージのポイントを取得（ステージごとに0に戻るのでたぶん引数いらない）
+            int thisStagePoint = UIPoint._instance._nowPoint.Value;
+            if(nowStage == 0)
+            {
+                //最初のステージ開始時は最終ポイントを0に戻す
+                loaded._finalPoint = 0;
+            }
+            int finalPoint = thisStagePoint + loaded._finalPoint;
+            _sortPointList.Add(finalPoint);
+            // 降順に並べて、先頭5個を抽出。
             List<int> _sorted =　_sortPointList
                 .OrderByDescending(n => n) // 降順ソート
                 .Take(5)                    // 上から5個だけ取得
                 .ToList();
-            _sortPointList.Clear();
+            _sortPointList.Clear();//一度クリアしたリストにソートした配列をいれなおす
             _sortPointList = _sorted;
 
-            foreach (var n in _sortPointList)
+            SaveData data = new SaveData
             {
-                Debug.Log(n);
-            }
+                _resultPoint = _sortPointList,//ソート済みスコア
+                _finalPoint = finalPoint,//ゲームオーバーまで合算したスコア
+                _nowStage = nowStage,//現在のステージ
+                _isStageCleared = isCleared//クリアしたかどうか
 
+            };
+
+            SaveSystem.Save(data);
+            Debug.Log("セーブ完了。保存場所：" + Application.persistentDataPath);
         }
-       
-
-
-        SaveData data = new SaveData
-        {
-             _stage1AndPoint = _sortPointList,
-             _nowStage = nowStage,
-             _isStageCleared = isCleared
-        };
-
-        SaveSystem.Save(data);
-        Debug.Log("セーブ完了。保存場所：" + Application.persistentDataPath);
+     
     }
 
     private void SaveDataClear()
     {
+        //スコア完全初期化用
         SaveData loaded = SaveSystem.Load();
         if (loaded == null)
         {
@@ -279,7 +289,8 @@ public class GameMaster : MonoBehaviour
             _sortPointList.Clear();
             SaveData newData = new SaveData
             {
-                _stage1AndPoint = _sortPointList,
+                _resultPoint = _sortPointList,
+                _finalPoint = 0,
                 _nowStage = 0,
                 _isStageCleared = false
             };

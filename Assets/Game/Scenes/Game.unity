@@ -3010,6 +3010,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterLocator
       objectReference: {fileID: 0}
+    - target: {fileID: 2055608734196077397, guid: d699dae32a7bdcd4aa9c06f10898bb95,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3612791385712088869, guid: d699dae32a7bdcd4aa9c06f10898bb95,
         type: 3}
       propertyPath: m_Mesh
