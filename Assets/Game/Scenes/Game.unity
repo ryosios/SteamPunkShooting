@@ -3279,11 +3279,6 @@ PrefabInstance:
       objectReference: {fileID: 852469034}
     - target: {fileID: 5412262995852525535, guid: d699dae32a7bdcd4aa9c06f10898bb95,
         type: 3}
-      propertyPath: _characterSpecialTrans
-      value: 
-      objectReference: {fileID: 478260755}
-    - target: {fileID: 5412262995852525535, guid: d699dae32a7bdcd4aa9c06f10898bb95,
-        type: 3}
       propertyPath: _characterSpecialPosTrans
       value: 
       objectReference: {fileID: 478260755}

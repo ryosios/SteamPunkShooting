@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+using System.Linq;
 
 public class GameMaster : MonoBehaviour
 {
@@ -39,9 +39,11 @@ public class GameMaster : MonoBehaviour
     //Chapter
     private ChapterBase _chapter;
 
-    //ゲームオーバーかネクストステージかのフラグ
-    static bool _isGameover = false;
 
+    //ポイントセーブ用
+    //ステージが増えたらSavaDataクラスに追加
+    //並べ替え用
+    private List<int> _sortPointList = new List<int>(5);
 
     // Start is called before the first frame update
     void Awake()
@@ -59,6 +61,7 @@ public class GameMaster : MonoBehaviour
                     //ゲームオーバー時
                     Debug.Log("ゲームオーバー");
                     HandleGameOverAsync();
+                    SaveGame(_stageNumber.Value, false);
 
                 }).AddTo(this);
         _nextStageSubject             
@@ -66,9 +69,8 @@ public class GameMaster : MonoBehaviour
                {
                    //ネクストステージ時
                    Debug.Log("ネクストステージ");
-                   _isGameover = false;//ゲームオーバーかネクストステージか
-                   SceneManager.LoadScene("Result"); // リザルトシーンに遷移
-
+                   HandleNextGameAsync();
+                   SaveGame(_stageNumber.Value, true);
                }).AddTo(this);
 
 
@@ -119,11 +121,11 @@ public class GameMaster : MonoBehaviour
                                 switch (chapterNumber)
                                 {
                                     case 0:
-                                        Debug.Log("1_chapter0");
+                                        Debug.Log("0_chapter0");
                                         
                                         break;
                                     case 1:
-                                        Debug.Log("1_chapter1");
+                                        Debug.Log("0_chapter1");
 
                                         GameObject chapter = (GameObject) Resources.Load("Chapter/Chapter1");
                                         _chapter = Instantiate(chapter, _stageTrans).GetComponent<ChapterBase>();
@@ -179,13 +181,73 @@ public class GameMaster : MonoBehaviour
     }
     private async UniTaskVoid HandleGameOverAsync()
     {
-        Debug.Log("ゲームオーバー");
-        _isGameover = true;
-
+        //ゲームオーバーのときの処理
         _backGroundMaker.SetBgSpeed(0f);
-        _characterLocator.SetSpineAnimation(_characterLocator.characterSpineSA,1,"gameover",false,1);
+        _characterLocator.CharacterGameoverAnimation();
         await UniTask.Delay(TimeSpan.FromSeconds(3f)); // 3秒待つ
 
         SceneManager.LoadScene("Result");
     }
+    private async UniTaskVoid HandleNextGameAsync()
+    {
+        //ネクストステージのときの処理
+        _backGroundMaker.SetBgSpeed(0f);
+        //_characterLocator.CharacterGameoverAnimation();
+        await UniTask.Delay(TimeSpan.FromSeconds(3f)); // 3秒待つ
+
+        SceneManager.LoadScene("Result");
+    }
+
+    private void SaveGame(int nowStage, bool isCleared)
+    {
+        //ステージが増えたら追加。
+        SaveData loaded = SaveSystem.Load();
+
+        if (loaded == null)
+        {
+            Debug.Log("セーブデータが見つかりませんでした");
+            for(int i = 0; i<_sortPointList.Count; i++)
+            {
+                _sortPointList[i] = 0;
+            }
+            SaveData newData = new SaveData
+            {
+                _stage1AndPoint = _sortPointList,
+                _nowStage = 0,
+                _isStageCleared = false
+            };
+            SaveSystem.Save(newData);
+
+        }
+
+        if (loaded != null)
+        {
+            Debug.Log($"ステージとポイント: {loaded._stage1AndPoint},現在のステージ: {loaded._nowStage}, クリアしたかどうかのフラグ: {loaded._isStageCleared}");
+            //スコアデータに新規データを交えて５つに並べ替え。
+            foreach (var stage1AndPoint in loaded._stage1AndPoint)
+            {
+                _sortPointList.Add(stage1AndPoint);
+            }
+            // 降順に並べて、先頭5個を抽出
+            _sortPointList
+                .OrderByDescending(n => n) // 降順ソート
+                .Take(5)                    // 上から5個だけ取得
+                .ToList();
+
+        }
+       
+
+
+        SaveData data = new SaveData
+        {
+             _stage1AndPoint = _sortPointList,
+             _nowStage = nowStage,
+             _isStageCleared = isCleared
+        };
+
+        SaveSystem.Save(data);
+        Debug.Log("セーブ完了。保存場所：" + Application.persistentDataPath);
+    }
+
+   
 }

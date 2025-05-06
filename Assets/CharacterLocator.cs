@@ -27,6 +27,7 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private PlayableDirector _cutinPlayable;
     [SerializeField] private Transform _characterSpecialPosTrans;
     [SerializeField] private ParticleSystem _characterSpecialEffectParticle;
+    [SerializeField] private ParticleSystem _characterGameoverEffectParticle;
     public SkeletonAnimation characterSpineSA => _characterSpineSA;
 
     [Header("AttackType")]
@@ -598,5 +599,11 @@ public class CharacterLocator : MonoBehaviour
     private void GetHPItemPoint(int point)
     {
         _characterHP.Value = Mathf.Clamp(_characterHP.Value + point, _minHP, _maxHP);
+    }
+
+    public void CharacterGameoverAnimation()
+    {
+        SetSpineAnimation(characterSpineSA, 1, "gameover", false, 1);
+        _characterGameoverEffectParticle.Play();
     }
 }
