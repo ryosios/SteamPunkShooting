@@ -1277,6 +1277,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4972235584579464383}
+  - component: {fileID: 7012747497849418064}
   m_Layer: 0
   m_Name: UIResult
   m_TagString: Untagged
@@ -1301,6 +1302,24 @@ Transform:
   - {fileID: 7282136616900367446}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7012747497849418064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4271203234424379706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec2f9ee61283c8942861485cdfda030b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pointText:
+  - {fileID: 9003708795307763097}
+  - {fileID: 5949054194968436556}
+  - {fileID: 5601896258411424367}
+  - {fileID: 4498250022781984026}
+  - {fileID: 2031472801626806917}
 --- !u!1 &4499699662464602040
 GameObject:
   m_ObjectHideFlags: 0
@@ -1313,7 +1332,7 @@ GameObject:
   - component: {fileID: 4858506696180608451}
   - component: {fileID: 4498250022781984026}
   m_Layer: 5
-  m_Name: Text3
+  m_Name: PointText3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2226,7 +2245,7 @@ GameObject:
   - component: {fileID: 9153903718993768800}
   - component: {fileID: 2031472801626806917}
   m_Layer: 5
-  m_Name: Text4
+  m_Name: PointText4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2670,7 +2689,7 @@ GameObject:
   - component: {fileID: 1932270514655947764}
   - component: {fileID: 5949054194968436556}
   m_Layer: 5
-  m_Name: Text2 (1)
+  m_Name: PointText1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2881,7 +2900,7 @@ GameObject:
   - component: {fileID: 6074001614846356793}
   - component: {fileID: 5601896258411424367}
   m_Layer: 5
-  m_Name: Text2
+  m_Name: PointText2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3017,7 +3036,7 @@ GameObject:
   - component: {fileID: 5830953420364489585}
   - component: {fileID: 9003708795307763097}
   m_Layer: 5
-  m_Name: Text2 (2)
+  m_Name: PointText0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

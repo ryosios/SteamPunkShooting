@@ -31,6 +31,7 @@ public class GameMaster : MonoBehaviour
     public Button TestButtonC;
     public Button TestButtonN;
     public Toggle TestToggle;
+    public Button TestButtonDataClear;
 
     [Header("テスト用変数")]
     [SerializeField] private int _testChapterNumber;
@@ -53,6 +54,7 @@ public class GameMaster : MonoBehaviour
         TestButtonC.gameObject.SetActive(false);
         TestButtonN.gameObject.SetActive(false);
         TestToggle.gameObject.SetActive(false);
+        TestButtonDataClear.gameObject.SetActive(false);
 #endif
         _gameOverSubject
                .Where(_ => _isDebugGameover)
@@ -106,6 +108,13 @@ public class GameMaster : MonoBehaviour
                 _isDebugGameover = isOn;
             })
             .AddTo(this); // オブジェクト破棄時に購読解除
+        TestButtonDataClear.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                SaveDataClear();
+            })
+            .AddTo(this); // thisが破棄されたときに自動解除
+
 
         _stageNumber
             .Subscribe(stageNumber => //値が引数で自動で入る
@@ -228,11 +237,19 @@ public class GameMaster : MonoBehaviour
             {
                 _sortPointList.Add(stage1AndPoint);
             }
+            _sortPointList.Add(UIPoint._instance._nowPoint.Value);
             // 降順に並べて、先頭5個を抽出
-            _sortPointList
+            List<int> _sorted =　_sortPointList
                 .OrderByDescending(n => n) // 降順ソート
                 .Take(5)                    // 上から5個だけ取得
                 .ToList();
+            _sortPointList.Clear();
+            _sortPointList = _sorted;
+
+            foreach (var n in _sortPointList)
+            {
+                Debug.Log(n);
+            }
 
         }
        
@@ -249,5 +266,28 @@ public class GameMaster : MonoBehaviour
         Debug.Log("セーブ完了。保存場所：" + Application.persistentDataPath);
     }
 
-   
+    private void SaveDataClear()
+    {
+        SaveData loaded = SaveSystem.Load();
+        if (loaded == null)
+        {
+            return;
+        }
+        if (loaded != null)
+        {
+
+            _sortPointList.Clear();
+            SaveData newData = new SaveData
+            {
+                _stage1AndPoint = _sortPointList,
+                _nowStage = 0,
+                _isStageCleared = false
+            };
+
+            SaveSystem.Save(newData);
+            Debug.Log("セーブクリア完了。保存場所：" + Application.persistentDataPath);
+        }
+      
+    }
+
 }
