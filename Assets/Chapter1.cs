@@ -1,7 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,10 +27,16 @@ public class Chapter1 : ChapterBase
     private Vector3 _posDuration = new Vector3(0, 0, 0);//距離の差分
     private float _timeDuration = 1f;//時間の差分
 
+    private CancellationToken _destroyToken;
 
+    private void OnDestroy()
+    {
+        _sequence.Kill();
+    }
     void Awake()
     {
         _gameMaster = GameObject.FindWithTag("GameMaster").GetComponent<GameMaster>();
+        _destroyToken = this.GetCancellationTokenOnDestroy(); // ゲームオブジェクトが破棄されたらキャンセル
         _enemyLocators = new EnemyLocator[_enemys.Length];
         for(int i = 0; i< _enemys.Length; i++)
         {
@@ -58,7 +66,7 @@ public class Chapter1 : ChapterBase
         switch (selectNumber)
         {
             case 0://待機時間用
-                WaitStartAsync(1f).Forget(); 
+                WaitStartAsync(1f,_destroyToken).Forget(); 
                 break;
             case 1://動作開始
                 for (int i = 0; i < _attackParticles.Length; i++)
@@ -123,7 +131,7 @@ public class Chapter1 : ChapterBase
                 });
                 _sequence.OnComplete(() =>
                 {
-                    NextChapter().Forget();
+                    NextChapter(_destroyToken).Forget();
                 });
                 _sequence.Play();
                 break;
@@ -149,13 +157,13 @@ public class Chapter1 : ChapterBase
             //敵全滅したら次チャプター
             
             
-            NextChapter().Forget();
+            NextChapter(_destroyToken).Forget();
 
         }
 
     }
 
-    private async UniTaskVoid NextChapter()
+    private async UniTaskVoid NextChapter(CancellationToken destroyToken)
     {
         _selectNumber.Value += 1;
         _gameMaster._chapterNumber.Value += 1;
@@ -164,16 +172,35 @@ public class Chapter1 : ChapterBase
             _attackParticles[i].Stop();//攻撃パーティクルを終了
         }
         _sequence.Kill();
-        await UniTask.Delay(System.TimeSpan.FromSeconds(10f));
+        try
+        {
+            await UniTask.Delay(System.TimeSpan.FromSeconds(10f), cancellationToken: destroyToken);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("ダメージ処理中にオブジェクトが破棄されました（処理中断）");
+            return; // 以降の処理を中止
+        }
         _enemyLocatorsAlliveList.Clear();
-        Destroy(this.gameObject);
+        if(this.gameObject != null)
+        {
+            Destroy(this.gameObject);
+        }
+        
 
     }
 
-    private async UniTaskVoid WaitStartAsync(float waitSecond)
+    private async UniTaskVoid WaitStartAsync(float waitSecond,CancellationToken destroyToken)
     {
-        
-        await UniTask.Delay(System.TimeSpan.FromSeconds(waitSecond));  // 1秒待つ
+        try
+        {
+            await UniTask.Delay(System.TimeSpan.FromSeconds(waitSecond), cancellationToken: destroyToken);  // 1秒待つ
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("ダメージ処理中にオブジェクトが破棄されました（処理中断）");
+            return; // 以降の処理を中止
+        }
         _selectNumber.Value += 1;
         Debug.Log("selectNumber1開始");
     }

@@ -161,6 +161,7 @@ MonoBehaviour:
   - {fileID: 865772525}
   - {fileID: 29296782}
   _stageTrans: {fileID: 1417881131}
+  _characterLocator: {fileID: 710688337}
   _stageNumber:
     value: 0
   _chapterNumber:
@@ -169,7 +170,9 @@ MonoBehaviour:
   TestButtonS: {fileID: 1716605178}
   TestButtonC: {fileID: 1445614984}
   TestButtonN: {fileID: 1227613463}
+  TestToggle: {fileID: 1777695818}
   _testChapterNumber: 0
+  _isDebugGameover: 0
 --- !u!4 &131508368
 Transform:
   m_ObjectHideFlags: 0
@@ -1623,6 +1626,18 @@ Transform:
   - {fileID: 1661729398}
   m_Father: {fileID: 1176674594}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1777695818 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5942287323221894105, guid: 7d1138e160a23444e831dccf744254d9,
+    type: 3}
+  m_PrefabInstance: {fileID: 4319259806628428471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1788716844 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3384934782099889251, guid: fb40249578f659a48aea4c6cbf46ca18,

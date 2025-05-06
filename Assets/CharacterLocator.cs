@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UniRx;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.TextCore.Text;
@@ -26,6 +27,7 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private PlayableDirector _cutinPlayable;
     [SerializeField] private Transform _characterSpecialPosTrans;
     [SerializeField] private ParticleSystem _characterSpecialEffectParticle;
+    public SkeletonAnimation characterSpineSA => _characterSpineSA;
 
     [Header("AttackType")]
     [SerializeField] private ParticleSystem[] _characterAttackObject;
@@ -72,6 +74,7 @@ public class CharacterLocator : MonoBehaviour
     //被ダメージ時のエフェクトの時間
     private const float _damageEffectTime = 1.0f;
 
+    private CancellationToken _destroyToken;
 
     public enum MotionType
     {
@@ -92,6 +95,8 @@ public class CharacterLocator : MonoBehaviour
         _previousHP = _characterHP.Value;
         _characterSpecialPos = _characterSpecialPosTrans.localPosition;
         _initCharacterVelocity = _characterVelocity;
+
+        _destroyToken = this.GetCancellationTokenOnDestroy(); // ゲームオブジェクトが破棄されたらキャンセル
 
         if (_characterSpineSA != null)
         {
@@ -142,7 +147,8 @@ public class CharacterLocator : MonoBehaviour
 
                 if (hp <= 0)
                 {
-                    Debug.Log("ゲームオーバー時");
+                    Debug.Log("HPが0");
+                    _gameMaster._gameOverSubject.OnNext(UniRx.Unit.Default);
                 }
 
                 _previousHP = hp;
@@ -170,7 +176,7 @@ public class CharacterLocator : MonoBehaviour
                 _getDamageSubject
                     .Subscribe(damage =>
                     {
-                        GetDamagePoint(damage);
+                        GetDamagePoint(damage, _destroyToken);
                         SetSpineAnimation(_characterSpineSA,3, "damaged_track3", false, _damageEffectTime);
                     })
                     .AddTo(this);
@@ -181,7 +187,7 @@ public class CharacterLocator : MonoBehaviour
                     .Subscribe(attackLevel =>
                     {
                         CharacterAttackSet(attackLevel);
-                    });
+                    }).AddTo(this);
 
                 //スペースボタンを監視。スペシャル起動
                 Observable.EveryUpdate()               　　
@@ -221,6 +227,10 @@ public class CharacterLocator : MonoBehaviour
             })
             .AddTo(this);
 
+    }
+    private void Start()
+    {
+        
     }
 
     private void OnDestroy()
@@ -345,11 +355,21 @@ public class CharacterLocator : MonoBehaviour
         }
     }
 
-    private async void GetDamagePoint(int damage)
-    {      
+    private async void GetDamagePoint(int damage,CancellationToken destroyToken)
+    {
         this.gameObject.layer = 6;
         _characterHP.Value = Mathf.Clamp(_characterHP.Value - damage, _minHP, _maxHP);
-        await UniTask.Delay(TimeSpan.FromSeconds(_damageEffectTime));
+
+        try
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(_damageEffectTime), cancellationToken: destroyToken);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("ダメージ処理中にオブジェクトが破棄されました（処理中断）");
+            return; // 以降の処理を中止
+        }
+
         this.gameObject.layer = 3;
     }
    
@@ -526,7 +546,7 @@ public class CharacterLocator : MonoBehaviour
 
     }
 
-    private void SetSpineAnimation(SkeletonAnimation skeletonAnimation,int trackNumber , String animationName,bool loop , float timeScale)
+    public void SetSpineAnimation(SkeletonAnimation skeletonAnimation,int trackNumber , String animationName,bool loop , float timeScale)
     {
         //キャラ用汎用アニメーションメソッド
         skeletonAnimation.state.TimeScale = timeScale;
@@ -562,7 +582,7 @@ public class CharacterLocator : MonoBehaviour
     {
         if (collision.gameObject.tag == "EnemyBody")//敵との直接接触用
         {
-            GetDamagePoint(_enemyTouchDamage);
+            GetDamagePoint(_enemyTouchDamage, _destroyToken);
             SetSpineAnimation(_characterSpineSA, 3, "damaged_track3", false, _damageEffectTime);
             Debug.Log("エネミーに接触");
         }

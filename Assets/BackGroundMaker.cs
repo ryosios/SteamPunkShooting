@@ -14,6 +14,11 @@ public class BackGroundMaker : MonoBehaviour
     [SerializeField] private float _bgSpeed;
     [SerializeField] private float _bgDistance;
     [SerializeField] private float _bgRangeTime;
+    public void SetBgSpeed(float speed)
+    {
+        _bgSpeed = speed;
+    }
+
     private bool _isBgCreate = false;
 
     private const float _bgDepth = 17.0f;

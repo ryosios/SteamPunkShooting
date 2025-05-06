@@ -24,8 +24,29 @@ MonoBehaviour:
     multiplyMaterials: []
     screenMaterials: []
   skeletonDataModifiers: []
-  fromAnimation: []
-  toAnimation: []
-  duration: []
-  defaultMix: 0.2
+  fromAnimation:
+  - gameover
+  - gameover
+  - gameover
+  - gameover
+  - gameover
+  - gameover
+  - gameover
+  toAnimation:
+  - damaged_track3
+  - dush
+  - run_forwardback
+  - run_left
+  - run_right
+  - special
+  - blink
+  duration:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  defaultMix: 0
   controller: {fileID: 0}

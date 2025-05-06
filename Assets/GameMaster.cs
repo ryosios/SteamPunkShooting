@@ -1,10 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UniRx;
+﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UniRx;
 using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 
 public class GameMaster : MonoBehaviour
 {
@@ -12,8 +16,12 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private Animator _titleImageAnimator;
     [SerializeField] private RectTransform[] _titleTweenHaguruma;
     [SerializeField] private Transform _stageTrans;
+    [SerializeField] private CharacterLocator _characterLocator;
+
     //キャラクターの挙動開始フラグ
     public Subject<UniRx.Unit> _startChapter1Subject = new Subject<UniRx.Unit>();//挙動開始。chapter1開始時。アタック撃つフラグ
+    public Subject<UniRx.Unit> _gameOverSubject = new Subject<UniRx.Unit>();//ゲームオーバーイベント
+    public Subject<UniRx.Unit> _nextStageSubject = new Subject<UniRx.Unit>();//ネクストステージイベント
 
     public ReactiveProperty<int> _stageNumber = new ReactiveProperty<int>(0);
     public ReactiveProperty<int> _chapterNumber = new ReactiveProperty<int>(0);
@@ -22,14 +30,17 @@ public class GameMaster : MonoBehaviour
     public Button TestButtonS;
     public Button TestButtonC;
     public Button TestButtonN;
-    
+    public Toggle TestToggle;
 
     [Header("テスト用変数")]
     [SerializeField] private int _testChapterNumber;
+    [SerializeField] private bool _isDebugGameover = true;
 
     //Chapter
     private ChapterBase _chapter;
 
+    //ゲームオーバーかネクストステージかのフラグ
+    static bool _isGameover = false;
 
 
     // Start is called before the first frame update
@@ -39,8 +50,26 @@ public class GameMaster : MonoBehaviour
         TestButtonS.gameObject.SetActive(false);
         TestButtonC.gameObject.SetActive(false);
         TestButtonN.gameObject.SetActive(false);
-
+        TestToggle.gameObject.SetActive(false);
 #endif
+        _gameOverSubject
+               .Where(_ => _isDebugGameover)
+                .Subscribe(_ =>
+                {
+                    //ゲームオーバー時
+                    Debug.Log("ゲームオーバー");
+                    HandleGameOverAsync();
+
+                }).AddTo(this);
+        _nextStageSubject             
+               .Subscribe(_ =>
+               {
+                   //ネクストステージ時
+                   Debug.Log("ネクストステージ");
+                   _isGameover = false;//ゲームオーバーかネクストステージか
+                   SceneManager.LoadScene("Result"); // リザルトシーンに遷移
+
+               }).AddTo(this);
 
 
         _startButton.OnClickAsObservable()
@@ -68,6 +97,13 @@ public class GameMaster : MonoBehaviour
                  _chapterNumber.Value = _testChapterNumber;
              })
              .AddTo(this); // thisが破棄されたときに自動解除
+        TestToggle
+            .OnValueChangedAsObservable()
+            .Subscribe(isOn =>
+            {
+                _isDebugGameover = isOn;
+            })
+            .AddTo(this); // オブジェクト破棄時に購読解除
 
         _stageNumber
             .Subscribe(stageNumber => //値が引数で自動で入る
@@ -131,49 +167,25 @@ public class GameMaster : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {  
         BackGround();
-        StageSet(_stageNumber.Value, _chapterNumber.Value);
+        
     }
 
     private void BackGround()
     {
         _backGroundMaker.CreateBgObject();
     }
-    private void StageSet(int stageNumber, int chapterNumber)
+    private async UniTaskVoid HandleGameOverAsync()
     {
-        switch (stageNumber)
-        {
-            case 0:
-                //ステージ0開始時
-                break;
+        Debug.Log("ゲームオーバー");
+        _isGameover = true;
 
-                switch (chapterNumber)
-                {
-                    case 0:
-                        //チャプター0開始時
-                        break;
-                    case 1:
-                        //
-                        break;
-                }
+        _backGroundMaker.SetBgSpeed(0f);
+        _characterLocator.SetSpineAnimation(_characterLocator.characterSpineSA,1,"gameover",false,1);
+        await UniTask.Delay(TimeSpan.FromSeconds(3f)); // 3秒待つ
 
-            case 1:
-                //ステージ1開始時
-                switch (chapterNumber)
-                {
-                    case 0:
-                        //チャプター1開始時
-                        break;
-                    case 1:
-                        //
-                        break;
-                }
-
-                break;
-
-        }
-       
+        SceneManager.LoadScene("Result");
     }
 }
