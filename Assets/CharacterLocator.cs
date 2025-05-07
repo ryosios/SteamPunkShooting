@@ -28,6 +28,7 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private Transform _characterSpecialPosTrans;
     [SerializeField] private ParticleSystem _characterSpecialEffectParticle;
     [SerializeField] private ParticleSystem _characterGameoverEffectParticle;
+    [SerializeField] private Transform _characterAttackTrans;
     public SkeletonAnimation characterSpineSA => _characterSpineSA;
 
     [Header("AttackType")]
@@ -185,6 +186,7 @@ public class CharacterLocator : MonoBehaviour
 
                 //アタック（スキル）レベルを監視
                 _characterAttackLevel
+                    .Where(_ => _gameMaster._isStagePlay == true)
                     .DistinctUntilChanged()//値が同じ場合は無視
                     .Subscribe(attackLevel =>
                     {
@@ -355,6 +357,10 @@ public class CharacterLocator : MonoBehaviour
                 SetSpineAnimation(_characterSpineSA, 0, "run_right", true, _characterAnimationTimeScale);
                 break;
         }
+    }
+    public void AttackSetActive(bool isActive)
+    {
+        _characterAttackTrans.gameObject.SetActive(isActive);
     }
 
     private async void GetDamagePoint(int damage,CancellationToken destroyToken)
@@ -604,6 +610,7 @@ public class CharacterLocator : MonoBehaviour
 
     public void CharacterGameoverAnimation()
     {
+        _characterLocatorRigid.linearVelocity = Vector2.zero;
         SetSpineAnimation(characterSpineSA, 0, "gameover", false, 1);
         _characterGameoverEffectParticle.Play();
     }

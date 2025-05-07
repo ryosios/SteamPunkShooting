@@ -80,6 +80,7 @@ public class GameMaster : MonoBehaviour
 
 
         _startButton.OnClickAsObservable()
+            .First() // 最初の1回だけ通す
                .Subscribe(_ =>
                {
                    foreach(RectTransform tweenHaguruma in _titleTweenHaguruma)
@@ -195,6 +196,7 @@ public class GameMaster : MonoBehaviour
     {
         //ゲームオーバーのときの処理
         _backGroundMaker.SetBgSpeed(0f);
+        _characterLocator.AttackSetActive(false);
         _characterLocator.CharacterGameoverAnimation();
         await UniTask.Delay(TimeSpan.FromSeconds(3f)); // 3秒待つ
 

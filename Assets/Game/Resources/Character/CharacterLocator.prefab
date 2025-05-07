@@ -19494,6 +19494,7 @@ MonoBehaviour:
   _characterSpecialPosTrans: {fileID: 0}
   _characterSpecialEffectParticle: {fileID: 0}
   _characterGameoverEffectParticle: {fileID: 268398315889248581}
+  _characterAttackTrans: {fileID: 2310744307547937754}
   _characterAttackObject:
   - {fileID: 6794945584050506385}
   - {fileID: 8753425308308167760}
@@ -29490,7 +29491,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3303125909864814972
 Transform:
   m_ObjectHideFlags: 0
