@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f22eb1c5da43e7447b02d79b4f7d32da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameMaster: {fileID: 0}
   _enemys:
   - {fileID: 2677461153968605474}
   - {fileID: 2280771396083996914}
@@ -5106,6 +5105,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143009999362662918, guid: c34bc3182a6d0d145bbed54dadf9ad43,
+        type: 3}
+      propertyPath: TriggerModule.enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7416257530459715903, guid: c34bc3182a6d0d145bbed54dadf9ad43,
         type: 3}

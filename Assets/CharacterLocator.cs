@@ -29,6 +29,9 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private ParticleSystem _characterSpecialEffectParticle;
     [SerializeField] private ParticleSystem _characterGameoverEffectParticle;
     [SerializeField] private Transform _characterAttackTrans;
+    [SerializeField] private CircleCollider2D _graiseCollision;
+
+    public CircleCollider2D graiseCollision => _graiseCollision;
     public SkeletonAnimation characterSpineSA => _characterSpineSA;
 
     [Header("AttackType")]
@@ -37,7 +40,7 @@ public class CharacterLocator : MonoBehaviour
     private Tween _attackTween;
 
     //速度周り
-    private float _characterVelocity { get; set; } = 3f;
+    private float _characterVelocity { get; set; } = 5f;
     private float _initCharacterVelocity;
     private float _characterAnimationTimeScale = 1f;
 
@@ -203,7 +206,8 @@ public class CharacterLocator : MonoBehaviour
 
                 //左Ctrlを監視。スキル起動
                 Observable.EveryUpdate()
-               　　 .Where(_ => !_isSpecialActive)//スペシャル中はコントロール不可
+                    .Where(_ => _gameMaster._isStagePlay == true)
+                    .Where(_ => !_isSpecialActive)//スペシャル中はコントロール不可
                     .Where(_ => Input.GetKeyDown(KeyCode.LeftControl))
                     .Subscribe(_ => {
                         CharacterSkillSet();
@@ -434,6 +438,7 @@ public class CharacterLocator : MonoBehaviour
         if(_characterAttackLevel.Value < 4)
         {
             _characterAttackLevel.Value += 1;
+            _characterSpineSA.state.SetAnimation( 4, "attacklevel", false);
         }
 
         //キャンセル用トークン
@@ -586,6 +591,16 @@ public class CharacterLocator : MonoBehaviour
         return current.TrackTime < current.Animation.Duration;
     }
 
+    public void StopSpineAnimation(SkeletonAnimation skeletonAnimation, int trackNumber)
+    {
+        //キャラ用汎用アニメーションストップメソッド
+        TrackEntry current = skeletonAnimation.AnimationState.GetCurrent(0);
+        if (current != null)
+        {
+            skeletonAnimation.AnimationState.ClearTrack(trackNumber);
+        }
+
+    }
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "EnemyBody")//敵との直接接触用
@@ -611,6 +626,7 @@ public class CharacterLocator : MonoBehaviour
     public void CharacterGameoverAnimation()
     {
         _characterLocatorRigid.linearVelocity = Vector2.zero;
+        StopSpineAnimation(characterSpineSA, 1);
         SetSpineAnimation(characterSpineSA, 0, "gameover", false, 1);
         _characterGameoverEffectParticle.Play();
     }

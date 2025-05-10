@@ -19469,6 +19469,7 @@ Transform:
   - {fileID: 8683893885640064865}
   - {fileID: 2310744307547937754}
   - {fileID: 6531062487468993183}
+  - {fileID: 2232535576560659873}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5412262995852525535
@@ -19495,6 +19496,7 @@ MonoBehaviour:
   _characterSpecialEffectParticle: {fileID: 0}
   _characterGameoverEffectParticle: {fileID: 268398315889248581}
   _characterAttackTrans: {fileID: 2310744307547937754}
+  _graiseCollision: {fileID: 974007380751384805}
   _characterAttackObject:
   - {fileID: 6794945584050506385}
   - {fileID: 8753425308308167760}
@@ -19542,7 +19544,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 1
+  m_Radius: 0.55
 --- !u!50 &8534472817016875481
 Rigidbody2D:
   serializedVersion: 5
@@ -34655,7 +34657,7 @@ MonoBehaviour:
   immutableTriangles: 0
   pmaVertexColors: 1
   clearStateOnDisable: 0
-  tintBlack: 0
+  tintBlack: 1
   singleSubmesh: 0
   fixDrawOrder: 0
   addNormals: 0
@@ -54349,6 +54351,74 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af10c33a2b0a763409877d4da6671a41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &5873884810702989392
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2232535576560659873}
+  - component: {fileID: 974007380751384805}
+  m_Layer: 0
+  m_Name: GraiseCollision
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2232535576560659873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873884810702989392}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4585653750879566183}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &974007380751384805
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873884810702989392}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 2.37
 --- !u!1 &6528123886807026048
 GameObject:
   m_ObjectHideFlags: 0
