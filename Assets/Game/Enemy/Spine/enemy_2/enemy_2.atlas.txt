@@ -1,0 +1,12 @@
+enemy_2.png
+size:256,128
+filter:Linear,Linear
+scale:0.2
+body
+bounds:2,49,70,206
+rotate:90
+leg
+bounds:135,2,45,86
+rotate:90
+wing
+bounds:2,4,131,43

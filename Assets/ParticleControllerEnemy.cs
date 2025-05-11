@@ -51,7 +51,7 @@ public class ParticleControllerEnemy : MonoBehaviour
 
         if (count > 0)
         {
-            Debug.Log("グレイズ！");
+            //Debug.Log("グレイズ！");
             _onGrazeTriggered.OnNext(Unit.Default);  // グレイズ判定発生を通知
         }
     }
