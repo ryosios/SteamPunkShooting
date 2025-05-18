@@ -3909,7 +3909,7 @@ ParticleSystem:
     type: 1
     collisionMode: 1
     colliderForce: 0
-    multiplyColliderForceByParticleSize: 0
+    multiplyColliderForceByParticleSize: 1
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 1
     m_Planes:
@@ -4075,7 +4075,7 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 0.2
+    radiusScale: 0.15
     collidesWith:
       serializedVersion: 2
       m_Bits: 520
@@ -4093,7 +4093,7 @@ ParticleSystem:
     enter: 0
     exit: 0
     colliderQueryMode: 1
-    radiusScale: 1
+    radiusScale: 0.2
     primitives: []
   SubModule:
     serializedVersion: 2

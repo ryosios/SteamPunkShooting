@@ -15,19 +15,18 @@ public class ParticleControllerEnemy : MonoBehaviour
 
     private int _getDamagePointValue = 1;
 
-    private Subject<Unit> _onGrazeTriggered = new Subject<Unit>();
+   
 
     void Awake()
     {
         _attackParticle = GetComponent<ParticleSystem>();
         _attackParticle.trigger.SetCollider(0, _enemyLocator._characterLocator.graiseCollision);
+        Debug.Log("グレイズコリジョン"+_enemyLocator._characterLocator.graiseCollision);
     }
 
     private void Start()
     {
-        _onGrazeTriggered
-          .ThrottleFirst(System.TimeSpan.FromSeconds(0.2f))  // 0.2秒の間隔を置く
-          .Subscribe(_ => TriggerGrazeCheck());  // 0.2秒ごとにグレイズ判定処理を呼び出す
+      
     }
     void OnParticleCollision(GameObject obj)
     {
@@ -52,12 +51,8 @@ public class ParticleControllerEnemy : MonoBehaviour
         if (count > 0)
         {
             //Debug.Log("グレイズ！");
-            _onGrazeTriggered.OnNext(Unit.Default);  // グレイズ判定発生を通知
+            UIPoint._instance._onGrazeTriggered.OnNext(Unit.Default);  // グレイズ判定発生を通知
         }
     }
-    private void TriggerGrazeCheck()
-    {
-        // グレイズカウント加算やSE再生など、実際の処理
-        UIPoint._instance.AddPoint(1);
-    }
+   
 }

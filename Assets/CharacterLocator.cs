@@ -30,6 +30,8 @@ public class CharacterLocator : MonoBehaviour
     [SerializeField] private ParticleSystem _characterGameoverEffectParticle;
     [SerializeField] private Transform _characterAttackTrans;
     [SerializeField] private CircleCollider2D _graiseCollision;
+    [SerializeField] private SpriteRenderer _collisionMark;
+    [SerializeField] private ParticleSystem _grazeEffectParticle;
 
     public CircleCollider2D graiseCollision => _graiseCollision;
     public SkeletonAnimation characterSpineSA => _characterSpineSA;
@@ -98,6 +100,7 @@ public class CharacterLocator : MonoBehaviour
 
     private void Awake()
     {
+        _collisionMark.gameObject.SetActive(false);
         _previousHP = _characterHP.Value;
         _characterSpecialPos = _characterSpecialPosTrans.localPosition;
         _initCharacterVelocity = _characterVelocity;
@@ -119,10 +122,11 @@ public class CharacterLocator : MonoBehaviour
             .Where(_ => _gameMaster._isStagePlay == true)
             .Subscribe(_ =>
             {
+                
                 _characterLocatorRigid.linearVelocity = Vector2.zero;
                 if (!_isSpecialActive)
-                {
-                    CharacterMove();
+                {   
+                    CharacterMove();               
                 }
                 
             })
@@ -217,18 +221,20 @@ public class CharacterLocator : MonoBehaviour
                 //左Shiftを監視。低速モード
                 Observable.EveryUpdate()
                　　 .Where(_ => !_isSpecialActive)//スペシャル中はコントロール不可
-                    .Where(_ => Input.GetKeyDown(KeyCode.LeftShift))
+                    .Where(_ => Input.GetKeyDown(KeyCode.LeftShift ) || Input.GetKeyDown(KeyCode.RightShift))
                     .Subscribe(_ => {
                         _characterVelocity *= 0.5f;
                         _characterAnimationTimeScale *= 0.7f;
+                        _collisionMark.gameObject.SetActive(true);
                     })
                     .AddTo(this);
                 Observable.EveryUpdate()
                 　 .Where(_ => !_isSpecialActive)//スペシャル中はコントロール不可
-                   .Where(_ => Input.GetKeyUp(KeyCode.LeftShift))
+                   .Where(_ => Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.RightShift))
                    .Subscribe(_ => {
                        _characterVelocity = _initCharacterVelocity;
                        _characterAnimationTimeScale = 1f;
+                       _collisionMark.gameObject.SetActive(false);
                    })
                    .AddTo(this);
 
@@ -629,5 +635,14 @@ public class CharacterLocator : MonoBehaviour
         StopSpineAnimation(characterSpineSA, 1);
         SetSpineAnimation(characterSpineSA, 0, "gameover", false, 1);
         _characterGameoverEffectParticle.Play();
+    }
+
+    public void GrazeEffectPlay()
+    {
+        if (!_grazeEffectParticle.isPlaying)
+        {
+            _grazeEffectParticle.Play();
+        }
+        
     }
 }

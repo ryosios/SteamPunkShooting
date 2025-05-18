@@ -8,7 +8,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Chapter1 : ChapterBase
+public class Chapter2 : ChapterBase
 {
     // Start is called before the first frame update
 
@@ -23,7 +23,7 @@ public class Chapter1 : ChapterBase
     [HideInInspector] public DG.Tweening.Sequence _sequence;
 
     //個別設定
-    private Vector3 _initEnemyPos;//先頭のエネミーの位置
+    private Vector3[] _initEnemyPos;//先頭のエネミーの位置
     private Vector3 _posDuration = new Vector3(0, 0, 0);//距離の差分
     private float _timeDuration = 1f;//時間の差分
 
@@ -35,6 +35,7 @@ public class Chapter1 : ChapterBase
     }
     void Awake()
     {
+        _initEnemyPos = new Vector3[_enemys.Length];
         _gameMaster = GameObject.FindWithTag("GameMaster").GetComponent<GameMaster>();
         _destroyToken = this.GetCancellationTokenOnDestroy(); // ゲームオブジェクトが破棄されたらキャンセル
         _enemyLocators = new EnemyLocator[_enemys.Length];
@@ -48,7 +49,11 @@ public class Chapter1 : ChapterBase
             _enemyLocatorsAlliveList.Add(enemyLocator);
         }
 
-        _initEnemyPos = _enemys[0].localPosition;
+        for (int i = 0; i < _enemys.Length; i++)
+        {
+            _initEnemyPos[i] = _enemys[i].localPosition;
+        }
+       
 
         _attackParticles = new ParticleSystem[_enemys.Length];
         for (int i = 0; i < _enemys.Length; i++)
@@ -81,7 +86,9 @@ public class Chapter1 : ChapterBase
                     if (_enemys[i] != null)
                     {
                         //_enemys[i].localPosition = new Vector3(_initEnemyPos.x - _posDuration.x * i, _initEnemyPos.y - _posDuration.y * i, 0f);
-                        _enemys[i].localPosition = new Vector3(_initEnemyPos.x, _initEnemyPos.y, 0f);
+                        _enemys[i].localPosition = new Vector3(_initEnemyPos[i].x, _initEnemyPos[i].y, 0f);    
+
+                        /*
                         _sequence.Insert(0f + _timeDuration * i, _enemys[i].DOLocalPath(new[]
                         {
                             new Vector3(_initEnemyPos.x, _initEnemyPos.y, 0f),
@@ -89,19 +96,26 @@ public class Chapter1 : ChapterBase
                             //new Vector3(2.41f,5.71f,0f),
 
                         }, 2f, PathType.CatmullRom).SetEase(Ease.Linear));
+                        */
                        
                     }
-                   
+                    
                 }
+                _enemys[0].DOLocalMoveX(1.1f, 1f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+                _sequence.Insert(0f, _enemys[0].DOLocalMoveY(6f, 7f).SetEase(Ease.Linear));
+                _enemys[1].DOLocalMoveX(-1.1f, 1f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+                _sequence.Insert(0f, _enemys[1].DOLocalMoveY(6f, 7f).SetEase(Ease.Linear));
                 _sequence.OnUpdate(() =>
                 {
                     //敵が全員負けリストに入ったら強制次チャプターへ
                     NextChapterCompleteEnemy().Forget();
                 });
                 _sequence.OnComplete(() =>
-                { 
+                {
+                    _enemys[0].DOKill();
+                    _enemys[1].DOKill();
                     _selectNumber.Value += 1;
-
+                    
                 });
                 _sequence.Play();
                 break;
@@ -109,7 +123,7 @@ public class Chapter1 : ChapterBase
             case 2:
                 _sequence.Kill();
                 _sequence = DOTween.Sequence();
-
+                /*
                 for (int i = 0; i < _enemys.Length; i++)
                 {
                     if (_enemys[i] != null)
@@ -124,7 +138,7 @@ public class Chapter1 : ChapterBase
 
                         }, 2f, PathType.CatmullRom).SetEase(Ease.Linear));         
                     }                  
-                }
+                }*/
                 _sequence.OnUpdate(() =>
                 {
                     NextChapterCompleteEnemy().Forget();

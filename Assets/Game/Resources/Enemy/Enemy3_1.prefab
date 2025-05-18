@@ -388,7 +388,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 17.33
+      scalar: 5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -3852,7 +3852,7 @@ ParticleSystem:
     type: 1
     collisionMode: 1
     colliderForce: 0
-    multiplyColliderForceByParticleSize: 0
+    multiplyColliderForceByParticleSize: 1
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 1
     m_Planes:
@@ -4018,7 +4018,7 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 0.33
+    radiusScale: 0.15
     collidesWith:
       serializedVersion: 2
       m_Bits: 520
@@ -4036,7 +4036,7 @@ ParticleSystem:
     enter: 0
     exit: 0
     colliderQueryMode: 1
-    radiusScale: 1
+    radiusScale: 0.2
     primitives: []
   SubModule:
     serializedVersion: 2
@@ -5087,10 +5087,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56a21061183aaf649ae2cd6d50d29a6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyBodyRect: {fileID: 0}
-  _enemyAttackParticle: {fileID: 0}
-  _effectBombParticle: {fileID: 0}
-  _effectShockParticle: {fileID: 0}
+  _enemyBodyRect: {fileID: 3795945193569607696}
+  _enemyAttackParticle: {fileID: 4395049191570231814}
+  _effectBombParticle: {fileID: 7405224891709063886}
+  _effectShockParticle: {fileID: 8751223736130316777}
   _Hp: 2
   _point: 100
 --- !u!1 &8680428519193946778

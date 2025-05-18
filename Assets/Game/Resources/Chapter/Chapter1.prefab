@@ -5027,6 +5027,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy2
       objectReference: {fileID: 0}
+    - target: {fileID: 6099270020846844495, guid: 0fff13e87877e884d875954bc453f822,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8762772666282841685, guid: 0fff13e87877e884d875954bc453f822,
         type: 3}
       propertyPath: m_Mesh

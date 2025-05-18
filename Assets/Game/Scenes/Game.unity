@@ -609,6 +609,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4319259806628428471}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &920078702 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5500033264960166761, guid: d699dae32a7bdcd4aa9c06f10898bb95,
+    type: 3}
+  m_PrefabInstance: {fileID: 6249894518207107073}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &972836526
 GameObject:
   m_ObjectHideFlags: 0
@@ -3067,6 +3073,11 @@ PrefabInstance:
       propertyPath: _characterLocator
       value: 
       objectReference: {fileID: 710688337}
+    - target: {fileID: 8971717129425743717, guid: 7d1138e160a23444e831dccf744254d9,
+        type: 3}
+      propertyPath: _characterLocator
+      value: 
+      objectReference: {fileID: 710688337}
     - target: {fileID: 9100378924841588736, guid: 7d1138e160a23444e831dccf744254d9,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3290,6 +3301,11 @@ PrefabInstance:
       propertyPath: _uICharacterGauge
       value: 
       objectReference: {fileID: 852469034}
+    - target: {fileID: 5412262995852525535, guid: d699dae32a7bdcd4aa9c06f10898bb95,
+        type: 3}
+      propertyPath: _grazeEffectParticle
+      value: 
+      objectReference: {fileID: 920078702}
     - target: {fileID: 5412262995852525535, guid: d699dae32a7bdcd4aa9c06f10898bb95,
         type: 3}
       propertyPath: _characterSpecialPosTrans

@@ -148,6 +148,18 @@ public class GameMaster : MonoBehaviour
                                         break;
                                     case 2:
                                         Debug.Log("1_chapter2");
+
+                                        GameObject chapter2 = (GameObject)Resources.Load("Chapter/Chapter2");
+                                        _chapter = Instantiate(chapter2, _stageTrans).GetComponent<ChapterBase>();
+                                        
+                                        _chapter._selectNumber.Value = 0;//チャプター1のセレクトナンバー0を設定。待機時間ののち向こうで1になる
+                                        //ChapterNumberを0にセットする処理が必要
+                                        break;
+                                    case 3:
+                                        Debug.Log("1_chapter3");
+
+                                       
+
                                         
                                         //ChapterNumberを0にセットする処理が必要
                                         break;
