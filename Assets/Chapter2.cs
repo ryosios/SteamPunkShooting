@@ -10,60 +10,7 @@ using UnityEngine.UI;
 
 public class Chapter2 : ChapterBase
 {
-    // Start is called before the first frame update
-
-    private GameMaster _gameMaster;
-    [SerializeField] private Transform[] _enemys;
-    private EnemyLocator[] _enemyLocators;
-    private ParticleSystem[] _attackParticles;
-
-    private List<EnemyLocator> _enemyLocatorsAlliveList = new List<EnemyLocator>(); //生きてる扱いのEnemyLocatorをいれておくリスト
     public override ReactiveProperty<int> _selectNumber { get; set; } = new ReactiveProperty<int>(-1);
-
-    [HideInInspector] public DG.Tweening.Sequence _sequence;
-
-    //個別設定
-    private Vector3[] _initEnemyPos;//先頭のエネミーの位置
-    private Vector3 _posDuration = new Vector3(0, 0, 0);//距離の差分
-    private float _timeDuration = 1f;//時間の差分
-
-    private CancellationToken _destroyToken;
-
-    private void OnDestroy()
-    {
-        _sequence.Kill();
-    }
-    void Awake()
-    {
-        _initEnemyPos = new Vector3[_enemys.Length];
-        _gameMaster = GameObject.FindWithTag("GameMaster").GetComponent<GameMaster>();
-        _destroyToken = this.GetCancellationTokenOnDestroy(); // ゲームオブジェクトが破棄されたらキャンセル
-        _enemyLocators = new EnemyLocator[_enemys.Length];
-        for(int i = 0; i< _enemys.Length; i++)
-        {
-            //生存フラグ用にインスタンスごとのEnemyLocatorを取得
-            _enemyLocators[i] = _enemys[i].GetComponent<EnemyLocator>();
-        }
-        foreach(var enemyLocator in _enemyLocators)
-        {
-            _enemyLocatorsAlliveList.Add(enemyLocator);
-        }
-
-        for (int i = 0; i < _enemys.Length; i++)
-        {
-            _initEnemyPos[i] = _enemys[i].localPosition;
-        }
-       
-
-        _attackParticles = new ParticleSystem[_enemys.Length];
-        for (int i = 0; i < _enemys.Length; i++)
-        {
-            _attackParticles[i] = _enemys[i].transform.Find("AttackParticle").GetComponent<ParticleSystem>();
-            _attackParticles[i].Stop();
-        }
-
-        _selectNumber.Subscribe(selectNumber => SetChapter(selectNumber)).AddTo(this);//_selectNumberが変更されたらその数に応じたChapterが再生される
-    }
 
     public override void SetChapter(int selectNumber)
     {
@@ -149,74 +96,6 @@ public class Chapter2 : ChapterBase
                 });
                 _sequence.Play();
                 break;
-
         }
-
     }
-
-
-    private async UniTaskVoid NextChapterCompleteEnemy()
-    {
-       
-        for (int i = _enemyLocatorsAlliveList.Count - 1; i >= 0; i--)
-        {
-            if (!_enemyLocatorsAlliveList[i]._isAlive)
-            {
-                _enemyLocatorsAlliveList.Remove(_enemyLocatorsAlliveList[i]);
-            }
-        }
-
-        if (_enemyLocatorsAlliveList.Count == 0)
-        {
-            //敵全滅したら次チャプター
-            
-            
-            NextChapter(_destroyToken).Forget();
-
-        }
-
-    }
-
-    private async UniTaskVoid NextChapter(CancellationToken destroyToken)
-    {
-        _selectNumber.Value += 1;
-        _gameMaster._chapterNumber.Value += 1;
-        for (int i = 0; i < _attackParticles.Length; i++)
-        {
-            _attackParticles[i].Stop();//攻撃パーティクルを終了
-        }
-        _sequence.Kill();
-        try
-        {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(10f), cancellationToken: destroyToken);
-        }
-        catch (OperationCanceledException)
-        {
-            Debug.Log("ダメージ処理中にオブジェクトが破棄されました（処理中断）");
-            return; // 以降の処理を中止
-        }
-        _enemyLocatorsAlliveList.Clear();
-        if(this.gameObject != null)
-        {
-            Destroy(this.gameObject);
-        }
-        
-
-    }
-
-    private async UniTaskVoid WaitStartAsync(float waitSecond,CancellationToken destroyToken)
-    {
-        try
-        {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(waitSecond), cancellationToken: destroyToken);  // 1秒待つ
-        }
-        catch (OperationCanceledException)
-        {
-            Debug.Log("ダメージ処理中にオブジェクトが破棄されました（処理中断）");
-            return; // 以降の処理を中止
-        }
-        _selectNumber.Value += 1;
-        Debug.Log("selectNumber1開始");
-    }
-
 }

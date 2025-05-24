@@ -7,29 +7,7 @@ using DG.Tweening;
 
 public class Chapter0 : ChapterBase
 {
-
-    [SerializeField] private GameMaster _gameMaster;
-    [SerializeField] private List<Transform> _enemys;
-
     public override ReactiveProperty<int> _selectNumber { get; set; } = new ReactiveProperty<int>(0);
-
-    [HideInInspector] public DG.Tweening.Sequence _sequence;
-
-    //個別設定
-    private Vector3 _initEnemyPos;//先頭のエネミーの位置
-    private Vector3 _posDuration = new Vector3(0, 0, 0);//距離の差分
-    private float _timeDuration = 1f;//時間の差分
-
-
-    void Awake()
-    {
-        /*
-
-        _initEnemyPos = _enemys[0].localPosition;
-
-        _selectNumber.DistinctUntilChanged().Subscribe(selectNumber => SetChapter(selectNumber)).AddTo(this);
-        */
-    }
 
     public override void SetChapter(int selectNumber)
     { /*
@@ -106,15 +84,5 @@ public class Chapter0 : ChapterBase
         }*/
 
     }
-
-        private void NextChapterSet()
-    {
-        if (_enemys.Count == 0)
-        {
-            _gameMaster._chapterNumber.Value += 1;
-            _sequence.Kill();
-        }
-    }
-
 }
 
